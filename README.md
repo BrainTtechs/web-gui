@@ -1,4 +1,23 @@
-# Getting Started with Create React App
+# fNIRS Web Dashboard
+
+- An example of fNIRS data is recorded for testing purposes. 
+You can render `DataChart` component by mocking with recorded data.
+
+```js
+const mock =  require('./Chart/sensor-example.json')
+//...
+    <DataChart data={mock} />
+//...
+```
+
+# Todo
+
+- [ ] More responsive chart for live update
+- [ ] Due to performance issues, consider using `DataChart` component for only saved data
+- [ ] Save/visualise recorded data 
+- [ ] Support more commands
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
