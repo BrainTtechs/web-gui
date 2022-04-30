@@ -92,7 +92,7 @@ export const WebSocketDemo = () => {
       <div>
         {data?.time && data.time.length > 1 && <DataChart data={data} />}
       </div>
-      <div>{<DataChart data={mock} />}</div>
+      {/* <div>{<DataChart data={mock} />}</div> */}
     </div>
   );
 };
