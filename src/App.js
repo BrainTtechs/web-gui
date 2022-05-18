@@ -1,10 +1,10 @@
 import './App.css';
-import { WebSocketDemo } from './Socket';
+import WebSocket from './Websocket';
 
 function App() {
   return (
     <div className="App">
-        <WebSocketDemo />
+      <WebSocket />
     </div>
   );
 }

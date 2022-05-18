@@ -1,19 +1,15 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import MultiChannelChart from './Chart';
-import Chart from './Chart';
-import DataChart from './Chart/DataChart';
+import DataChart from '../Chart/DataChart';
+import { COMMANDS } from './config';
 
 // const mock = require('./Chart/sensor-example.json');
 
-export const WebSocketDemo = () => {
-  //Public API that will echo messages sent to it back to the client
-  // const [socketUrl, setSocketUrl] = useState('ws://192.168.43.61/ws');
+const WebSocket = () => {
   const [socketUrl, setSocketUrl] = useState('ws://192.168.43.243/ws');
   const [messageHistory, setMessageHistory] = useState([]);
   const [counter, setCounter] = useState(0);
   const [stop, setStop] = useState(false);
-  const [running, setRunning] = useState(false);
   const [data, setData] = useState({
     time: [],
     p1_740: [],
@@ -78,14 +74,6 @@ export const WebSocketDemo = () => {
     }
   }, [lastMessage, setMessageHistory]);
 
-  const handleClickChangeSocketUrl = useCallback(
-    () => setSocketUrl('wss://demos.kaazing.com/echo'),
-    []
-  );
-
-  //const handleClickSendMessage = useCallback(() => sendMessage('Hello'), []);
-  const handleClickSendMessage = useCallback(() => sendMessage('yey'), []);
-
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
     [ReadyState.OPEN]: 'Open',
@@ -104,7 +92,7 @@ export const WebSocketDemo = () => {
     const l = window.addEventListener('keypress', (e) => {
       console.log(e);
       if (e.key === ' ') {
-        handleClickSendMessage();
+        sendMessage(COMMANDS.START);
       }
       if (e.key === 'Enter') {
         setStop(true);
@@ -116,7 +104,7 @@ export const WebSocketDemo = () => {
     <div>
       <div>Websocket status: {connectionStatus}</div>
       <button
-        onClick={handleClickSendMessage}
+        onClick={() => sendMessage(COMMANDS.START)}
         disabled={readyState !== ReadyState.OPEN}
       >
         Start
@@ -133,9 +121,13 @@ export const WebSocketDemo = () => {
         </pre>
       ) : null}
       <div>
-        {data?.time && data.time.length > 1 && <DataChart data={data} />}
+        {data?.time && data.time.length > 1 && (
+          <DataChart data={data} disableTimerange={!stop} />
+        )}
       </div>
       {/* <div>{<DataChart data={mock} />}</div> */}
     </div>
   );
 };
+
+export default WebSocket;

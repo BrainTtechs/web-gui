@@ -1,7 +1,8 @@
 import MultiChannelChart from './index';
 import { styler } from 'react-timeseries-charts';
 
-const DataChart = ({ data }) => {
+const DataChart = ({ data, disableTimerange }) => {
+  const SCALE = 580; // length of the chart in y axis
   const style = styler([
     { key: 'p1_740', color: '#d32f2f', width: 4 },
     { key: 'p2_740', color: '#1976d2', width: 4 },
@@ -100,7 +101,7 @@ const DataChart = ({ data }) => {
     for (let i = 0; i < data.time.length; i += 1) {
       if (i > 0) {
         // const time = data.time[i] * 1000;
-        const time = data.time[i] * 580;
+        const time = data.time[i] * SCALE;
 
         points['p1_740'].push([time, data.p1_740[i]]);
         points['p2_740'].push([time, data.p2_740[i]]);
@@ -123,6 +124,7 @@ const DataChart = ({ data }) => {
       baselineStyles={baselineStyles}
       channels={channels}
       channelNames={channelNames}
+      disableTimerange={disableTimerange}
       displayChannels={[
         'p1_740',
         'p2_740',

@@ -28,12 +28,8 @@ class MultiChannelChart extends React.Component {
   constructor(props) {
     super(props);
     const initialRange = new TimeRange([0 * 60 * 1000, 1 * 60 * 1000]);
-    const {
-      channels,
-      channelNames,
-      displayChannels,
-      rollupLevels
-    } = this.props;
+    const { channels, channelNames, displayChannels, rollupLevels } =
+      this.props;
 
     this.state = {
       ready: false,
@@ -49,15 +45,13 @@ class MultiChannelChart extends React.Component {
     };
   }
 
-  componentDidMount() {
-  }
-
   handleTrackerChanged = (t) => {
     this.setState({ tracker: t });
   };
 
   // Handles when the brush changes the timerange
   handleTimeRangeChange = (timerange) => {
+    if (this.props.disableTimerange) return;
     const { channels } = this.state;
     const { baseChannel } = this.props;
 
@@ -488,13 +482,13 @@ class MultiChannelChart extends React.Component {
         >
           Channels
         </span>
-        <span> | </span>
-        <span
+        {/* <span> | </span> */}
+        {/* <span
           style={this.state.mode !== 'rollup' ? linkStyleActive : linkStyle}
           onClick={() => this.setState({ mode: 'rollup' })}
         >
           Rollups
-        </span>
+        </span> */}
       </div>
     );
   };
@@ -547,12 +541,8 @@ class MultiChannelChart extends React.Component {
   render() {
     const { data, baseChannel } = this.props;
     setTimeout(() => {
-      const {
-        channelNames,
-        channels,
-        displayChannels,
-        rollupLevels
-      } = this.state;
+      const { channelNames, channels, displayChannels, rollupLevels } =
+        this.state;
 
       const points = data;
 
@@ -599,8 +589,6 @@ class MultiChannelChart extends React.Component {
 
       this.setState({ ready: true, channels, minTime, maxTime, minDuration });
     }, 0);
-
-
 
     const { ready, channels, displayChannels } = this.state;
     const { style } = this.props;
@@ -678,5 +666,4 @@ class MultiChannelChart extends React.Component {
   }
 }
 
-// Export example
 export default MultiChannelChart;
