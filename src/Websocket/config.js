@@ -1,4 +1,4 @@
 export const COMMANDS = {
-  START: 'START',
-  STOP: 'STOP'
+  START: '1',
+  STOP: '2'
 };
