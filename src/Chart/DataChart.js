@@ -1,7 +1,7 @@
 import MultiChannelChart from './index';
 import { styler } from 'react-timeseries-charts';
 
-const DataChart = ({ data, disableTimerange }) => {
+const DataChart = ({ data, disableTimerange, waveLength }) => {
   const SCALE = 580; // length of the chart in y axis
   const style = styler([
     { key: 'p1_740', color: '#d32f2f', width: 4 },
@@ -107,10 +107,10 @@ const DataChart = ({ data, disableTimerange }) => {
         points['p2_740'].push([time, data.p2_740[i]]);
         points['p3_740'].push([time, data.p3_740[i]]);
         points['p4_740'].push([time, data.p4_740[i]]);
-        // points['p1_850'].push([time, data.p1_850[i]]);
-        // points['p2_850'].push([time, data.p2_850[i]]);
-        // points['p3_850'].push([time, data.p3_850[i]]);
-        // points['p4_850'].push([time, data.p4_850[i]]);
+        points['p1_850'].push([time, data.p1_850[i]]);
+        points['p2_850'].push([time, data.p2_850[i]]);
+        points['p3_850'].push([time, data.p3_850[i]]);
+        points['p4_850'].push([time, data.p4_850[i]]);
       }
     }
 
@@ -129,11 +129,11 @@ const DataChart = ({ data, disableTimerange }) => {
         'p1_740',
         'p2_740',
         'p3_740',
-        'p4_740'
-        // 'p1_850',
-        // 'p2_850',
-        // 'p3_850',
-        // 'p4_850'
+        'p4_740',
+        'p1_850',
+        'p2_850',
+        'p3_850',
+        'p4_850'
       ]}
       rollupLevels={['1s', '2s', '3s']}
       baseChannel={'p1_740'}
