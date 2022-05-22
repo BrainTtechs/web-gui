@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, showModal, setShowModal } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -41,8 +41,18 @@ const WebSocket = () => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    const nonNullValue = newValue === null ? 0 : newValue
+    setValue(nonNullValue);
   };
+
+  const sendMessageToggle = () => {
+    if(value === 0)
+      sendMessage(COMMANDS.START_ALTERNATING)
+    else if(value === 1)
+      sendMessage(COMMANDS.START_740)
+    else if(value === 2)
+      sendMessage(COMMANDS.START_850)
+  }
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
@@ -97,8 +107,8 @@ const WebSocket = () => {
   const x = lastMessage ? JSON.parse(lastMessage.data) : {};
   console.log({ x });
 
-  useEffect(() => {
-    const l = window.addEventListener("keypress", (e) => {
+  const keyPress = useCallback(
+    (e) => {
       console.log(e);
       if (e.key === "1") {
         sendMessage(COMMANDS.START_ALTERNATING);
@@ -112,36 +122,25 @@ const WebSocket = () => {
       else if (e.key === "Enter") {
         setStop(true);
       }
-    });
-  }, []);
-  console.log("Ready State = " + ReadyState.OPEN)
-  console.log(readyState)
+    },
+    [setShowModal, showModal]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keyup", keyPress);
+    return () => document.removeEventListener("keyup", keyPress);
+  }, [keyPress]);
+
   return (
     <div>
       <div>Websocket status: {connectionStatus}</div>
       <Button
         style={{margin: 10}}
         variant="outlined"
-        onClick={() => sendMessage(COMMANDS.START_ALTERNATING)}
+        onClick={() => sendMessageToggle()}
         disabled={readyState !== ReadyState.OPEN}
       >
-        Start - Alternating
-      </Button>
-      <Button
-        style={{margin: 10}}
-        variant="outlined"
-        onClick={() => sendMessage(COMMANDS.START_740)}
-        disabled={readyState !== ReadyState.OPEN}
-      >
-        Start - 740
-      </Button>
-      <Button
-        style={{margin: 10}}
-        variant="outlined"
-        onClick={() => sendMessage(COMMANDS.START_850)}
-        disabled={readyState !== ReadyState.OPEN}
-      >
-        Start - 850
+        Start
       </Button>
       <Button
         style={{margin: 10}}
@@ -162,8 +161,8 @@ const WebSocket = () => {
           exclusive
           onChange={handleChange}
         >
-          <ToggleButton value="0">740</ToggleButton>
-          <ToggleButton value="1">850</ToggleButton>
+          <ToggleButton value={1}>740</ToggleButton>
+          <ToggleButton value={2}>850</ToggleButton>
         </ToggleButtonGroup>
       </Box>
       {lastMessage ? (
