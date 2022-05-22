@@ -100,25 +100,52 @@ const WebSocket = () => {
   useEffect(() => {
     const l = window.addEventListener("keypress", (e) => {
       console.log(e);
-      if (e.key === " ") {
-        sendMessage(COMMANDS.START);
+      if (e.key === "1") {
+        sendMessage(COMMANDS.START_ALTERNATING);
       }
-      if (e.key === "Enter") {
+      else if (e.key === "2") {
+        sendMessage(COMMANDS.START_740);
+      }
+      else if (e.key === "3") {
+        sendMessage(COMMANDS.START_850);
+      }
+      else if (e.key === "Enter") {
         setStop(true);
       }
     });
   }, []);
-
+  console.log("Ready State = " + ReadyState.OPEN)
+  console.log(readyState)
   return (
     <div>
       <div>Websocket status: {connectionStatus}</div>
       <Button
-        onClick={() => sendMessage(COMMANDS.START)}
+        style={{margin: 10}}
+        variant="outlined"
+        onClick={() => sendMessage(COMMANDS.START_ALTERNATING)}
         disabled={readyState !== ReadyState.OPEN}
       >
-        Start
+        Start - Alternating
       </Button>
       <Button
+        style={{margin: 10}}
+        variant="outlined"
+        onClick={() => sendMessage(COMMANDS.START_740)}
+        disabled={readyState !== ReadyState.OPEN}
+      >
+        Start - 740
+      </Button>
+      <Button
+        style={{margin: 10}}
+        variant="outlined"
+        onClick={() => sendMessage(COMMANDS.START_850)}
+        disabled={readyState !== ReadyState.OPEN}
+      >
+        Start - 850
+      </Button>
+      <Button
+        style={{margin: 10}}
+        variant="outlined"
         onClick={() => {
           setStop(true);
           handleOpen();
