@@ -66,6 +66,7 @@ const WebSocket = () => {
       reader.onload = function(event) {
         jsonData = JSON.parse(event.target.result)
         setFileData(jsonData)
+        setCounter(counter + 1)
       };
       reader.readAsText(file)
     }
@@ -73,38 +74,33 @@ const WebSocket = () => {
 
   useEffect(() => {
     if(fileData !== null) {
-      var dataConst = {
-        time: [],
-        p1_740: [],
-        p2_740: [],
-        p3_740: [],
-        p4_740: [],
-        p1_850: [],
-        p2_850: [],
-        p3_850: [],
-        p4_850: [],
+      const d = fileData[counter];
+      const limit = 100;
+      if (d.led == 740) {
+        const f = (a) => {
+          return a.slice(-limit);
+        };
+        setData({
+          ...data,
+          time: [...data.time, counter],
+          p1_740: [...f(data.p1_740), d.adc1],
+          p2_740: [...f(data.p2_740), d.adc2],
+          p3_740: [...f(data.p3_740), d.adc3],
+          p4_740: [...f(data.p4_740), d.adc4],
+        });
+      } else {
+        setData({
+          ...data,
+          time: [...data.time, counter],
+          p1_850: [...data.p1_850, d.adc1],
+          p2_850: [...data.p2_850, d.adc2],
+          p3_850: [...data.p3_850, d.adc3],
+          p4_850: [...data.p4_850, d.adc4],
+        });
       }
-      let i = 0;
-      while(i < 100) {
-        dataConst.time.push(i)
-        if(fileData[i].led === 740) {
-          dataConst.p1_740.push(fileData[i].adc1)
-          dataConst.p1_740.push(fileData[i].adc2)
-          dataConst.p1_740.push(fileData[i].adc3)
-          dataConst.p1_740.push(fileData[i].adc4)
-        }
-
-        else {
-          dataConst.p1_850.push(fileData[i].adc1)
-          dataConst.p1_850.push(fileData[i].adc2)
-          dataConst.p1_850.push(fileData[i].adc3)
-          dataConst.p1_850.push(fileData[i].adc4)
-        }
-        i += 1
-      }
-      setData(dataConst)
+      if (counter < limit) setCounter(counter + 1);
     }
-  }, [fileData])
+  }, [counter])
 
   useEffect(() => {
     if (stop) {
