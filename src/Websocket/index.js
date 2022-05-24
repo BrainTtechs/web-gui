@@ -87,7 +87,7 @@ const WebSocket = () => {
       let i = 0;
       while(i < 100) {
         dataConst.time.push(i)
-        if(fileData[i].led === '740') {
+        if(fileData[i].led === 740) {
           dataConst.p1_740.push(fileData[i].adc1)
           dataConst.p1_740.push(fileData[i].adc2)
           dataConst.p1_740.push(fileData[i].adc3)
