@@ -21,10 +21,11 @@ const WebSocket = () => {
   const [messageHistory, setMessageHistory] = useState([]);
   const [counter, setCounter] = useState(0);
   const [stop, setStop] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [nameOfFile, setNameOfFile] = useState("");
+  const [fileData, setFileData] = useState(null);
 
   const [data, setData] = useState({
     time: [],
@@ -56,6 +57,54 @@ const WebSocket = () => {
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
+
+  const uploadFile = (event) => {
+    let file = event.target.files[0]
+    if (file) {
+      var reader = new FileReader()
+      var jsonData = []
+      reader.onload = function(event) {
+        jsonData = JSON.parse(event.target.result)
+        setFileData(jsonData)
+      };
+      reader.readAsText(file)
+    }
+  }
+
+  useEffect(() => {
+    if(fileData !== null) {
+      var dataConst = {
+        time: [],
+        p1_740: [],
+        p2_740: [],
+        p3_740: [],
+        p4_740: [],
+        p1_850: [],
+        p2_850: [],
+        p3_850: [],
+        p4_850: [],
+      }
+      let i = 0;
+      while(i < 100) {
+        dataConst.time.push(i)
+        if(fileData[i].led === '740') {
+          dataConst.p1_740.push(fileData[i].adc1)
+          dataConst.p1_740.push(fileData[i].adc2)
+          dataConst.p1_740.push(fileData[i].adc3)
+          dataConst.p1_740.push(fileData[i].adc4)
+        }
+
+        else {
+          dataConst.p1_850.push(fileData[i].adc1)
+          dataConst.p1_850.push(fileData[i].adc2)
+          dataConst.p1_850.push(fileData[i].adc3)
+          dataConst.p1_850.push(fileData[i].adc4)
+        }
+        i += 1
+      }
+      setData(dataConst)
+    }
+  }, [fileData])
 
   useEffect(() => {
     if (stop) {
@@ -154,6 +203,11 @@ const WebSocket = () => {
       >
         Stop
       </Button>
+      <div>
+        <input type="file"
+        id="upload-button"
+        onChange={uploadFile} />
+      </div>
       <Box sx={{ borderBottom: 1, borderColor: "divider", marginTop: "2rem" }}>
         <ToggleButtonGroup
           color="primary"
