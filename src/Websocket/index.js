@@ -24,7 +24,8 @@ const WebSocket = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [nameOfFile, setNameOfFile] = useState("");
+  const [nameOfFile, setNameOfFile] = useState("foo");
+  const [rating, setRating] = useState(0);
   const [fileData, setFileData] = useState(null);
 
   const [data, setData] = useState({
@@ -150,7 +151,6 @@ const WebSocket = () => {
   console.log("render");
 
   const x = lastMessage ? JSON.parse(lastMessage.data) : {};
-  console.log({ x });
 
   const keyPress = useCallback(
     (e) => {
@@ -217,7 +217,7 @@ const WebSocket = () => {
       </Box>
       {lastMessage ? (
         <pre style={{ fontSize: "40px" }}>
-          {x.adc1} {x.adc2} {x.adc3} {x.adc4}
+          {x.adc1} {x.adc2} {x.adc3} {x.adc4} {x.rating}
         </pre>
       ) : null}
 
@@ -231,6 +231,10 @@ const WebSocket = () => {
         <DownloadModal
           setNameOfFile={setNameOfFile}
           nameOfFile={nameOfFile}
+          rating={rating}
+          setRating={setRating}
+          messageHistory={messageHistory}
+          setMessageHistory={setMessageHistory}
           open={open}
           handleClose={handleClose}
         />

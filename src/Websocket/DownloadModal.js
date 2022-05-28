@@ -5,15 +5,19 @@ import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import ReactStars from "react-rating-stars-component";
 
-function DownloadModal({ setNameOfFile, nameOfFile, open, handleClose}) {
-  const [socketUrl, setSocketUrl] = useState("ws://192.168.43.243/ws");
+function DownloadModal({ rating, setRating, setNameOfFile, nameOfFile, open, handleClose, messageHistory, setMessageHistory }) {
+  const [socketUrl, setSocketUrl] = useState("ws://192.168.43.91:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
-  const [messageHistory, setMessageHistory] = useState([]);
 
   const onNameChange = (e) => setNameOfFile(e.target.value);
+
+  const ratingChanged = (newRating) => {
+    setRating(newRating);
+  };
 
   const styleModal = {
     position: "absolute",
@@ -36,8 +40,9 @@ function DownloadModal({ setNameOfFile, nameOfFile, open, handleClose}) {
       a.download = fileName;
       a.click();
     }
+
     download(
-      JSON.stringify(messageHistory),
+      JSON.stringify({"data" : messageHistory, "rating" : rating}),
       nameOfFile + ".json",
       "text/plain"
     );
@@ -61,6 +66,7 @@ function DownloadModal({ setNameOfFile, nameOfFile, open, handleClose}) {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Do you want to download the history?
           </Typography>
+
           <button
             style={{
               fontSize: "5px",
@@ -72,6 +78,22 @@ function DownloadModal({ setNameOfFile, nameOfFile, open, handleClose}) {
           >
             <CloseIcon fontSize="small" />
           </button>
+        </div>
+        <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Typography id="modal-modal-title" variant="h6" component="h4">
+            Rate Commercials : {"  "}
+          </Typography>
+          <ReactStars
+            count={10}
+            onChange={ratingChanged}
+            size={24}
+            activeColor="#ffd700"
+            style={{ margin: "0px", padding: "0px" }}
+          />
         </div>
         <div
           style={{
