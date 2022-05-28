@@ -4,14 +4,14 @@ import { styler } from 'react-timeseries-charts';
 const DataChart = ({ data, disableTimerange, waveLength }) => {
   const SCALE = 580; // length of the chart in y axis
   const style = styler([
-    { key: 'p1_740', color: '#d32f2f', width: 4 },
-    { key: 'p2_740', color: '#1976d2', width: 4 },
-    { key: 'p3_740', color: 'green', width: 4 },
-    { key: 'p4_740', color: '#9c27b0', width: 4 },
-    { key: 'p1_850', color: '#ed6c02', width: 4 },
-    { key: 'p2_850', color: '#0288d1', width: 4 },
-    { key: 'p3_850', color: '#2e7d32', width: 4 },
-    { key: 'p4_850', color: 'steelblue', width: 4 }
+    { key: 'p1_740', color: '#d32f2f', width: 2 },
+    { key: 'p2_740', color: '#1976d2', width: 2 },
+    { key: 'p3_740', color: 'green', width: 2 },
+    { key: 'p4_740', color: '#9c27b0', width: 2 },
+    { key: 'p1_850', color: '#ed6c02', width: 2 },
+    { key: 'p2_850', color: '#0288d1', width: 2 },
+    { key: 'p3_850', color: '#2e7d32', width: 2 },
+    { key: 'p4_850', color: 'steelblue', width: 2 }
   ]);
 
   const baselineStyles = {

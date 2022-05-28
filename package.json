@@ -17,6 +17,7 @@
     "react-scripts": "5.0.1",
     "react-timeseries-charts": "^0.16.1",
     "react-use-websocket": "^4.0.0",
+    "ringjs": "^0.0.1",
     "serve": "^13.0.2",
     "web-vitals": "^2.1.0"
   },

@@ -151,7 +151,7 @@ class MultiChannelChart extends React.Component {
 
       rows.push(
         <ChartRow
-          height="100"
+          height="50"
           visible={channels[channelName].show}
           key={`row-${channelName}`}
         >
@@ -262,7 +262,7 @@ class MultiChannelChart extends React.Component {
 
       rows.push(
         <ChartRow
-          height="100"
+          height="50"
           visible={channels[channelName].show}
           key={`row-${channelName}`}
         >
@@ -405,7 +405,7 @@ class MultiChannelChart extends React.Component {
         onTimeRangeChanged={this.handleTimeRangeChange}
       >
         <ChartRow
-          height="200"
+          height="50"
           trackerInfoValues={trackerInfoValues}
           trackerInfoHeight={10 + trackerInfoValues.length * 16}
           trackerInfoWidth={140}
@@ -427,7 +427,7 @@ class MultiChannelChart extends React.Component {
         format="relative"
         trackerPosition={this.state.tracker}
       >
-        <ChartRow height="100" debug={false}>
+        <ChartRow height="50" debug={false}>
           <Brush
             timeRange={this.state.brushrange}
             allowSelectionClear
