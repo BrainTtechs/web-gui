@@ -1,10 +1,15 @@
 import './App.css';
+import Realtime from './Realtime';
+import UploadData from './UploadData';
+// import WebSocket from './Realtime/Websocket';
 import WebSocket from './Websocket';
 
 function App() {
   return (
     <div className="App">
-      <WebSocket />
+      {/* <WebSocket /> */}
+      {/* <UploadData /> */}
+      <Realtime />
     </div>
   );
 }

@@ -17,7 +17,8 @@ import DownloadModal from "./DownloadModal";
 // const mock = require('./Chart/sensor-example.json');
 
 const WebSocket = () => {
-  const [socketUrl, setSocketUrl] = useState("ws://192.168.43.243/ws");
+  // const [socketUrl, setSocketUrl] = useState("ws://192.168.43.243/ws");
+  const [socketUrl, setSocketUrl] = useState("ws://localhost:8080"); // simulation config
   const [messageHistory, setMessageHistory] = useState([]);
   const [counter, setCounter] = useState(0);
   const [stop, setStop] = useState(false);
@@ -108,8 +109,9 @@ const WebSocket = () => {
       return;
     }
     if (lastMessage !== null) {
+      console.log({lastMessage});
       const d = JSON.parse(lastMessage.data);
-      setMessageHistory((prev) => prev.concat(d));
+      // setMessageHistory((prev) => prev.concat(d));
       //   console.log({ d });
       const limit = 100;
       if (d.led === 740) {
