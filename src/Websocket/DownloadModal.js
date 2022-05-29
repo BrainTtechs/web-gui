@@ -149,7 +149,6 @@ function DownloadModal({
             onClick={() => {
               save();
             }}
-            disabled={readyState !== ReadyState.OPEN}
           >
             Download
           </Button>
