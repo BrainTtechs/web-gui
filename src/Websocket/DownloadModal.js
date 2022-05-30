@@ -137,6 +137,15 @@ function DownloadModal({
             marginTop: '1.5rem'
           }}
         >
+          {rating}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '1.5rem'
+          }}
+        >
           <TextField
             value={nameOfFile}
             onChange={onNameChange}
