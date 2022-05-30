@@ -1,4 +1,3 @@
-import useWebSocket, { ReadyState } from 'react-use-websocket';
 import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -18,10 +17,6 @@ function DownloadModal({
   messageHistory,
   setMessageHistory
 }) {
-  const [socketUrl, setSocketUrl] = useState('ws://192.168.43.91:8080');
-
-  const { sendMessage, lastMessage, readyState, getWebSocket } =
-    useWebSocket(socketUrl);
 
   const onNameChange = (e) => setNameOfFile(e.target.value);
 
