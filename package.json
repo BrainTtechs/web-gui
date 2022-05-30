@@ -19,7 +19,7 @@
     "react-scripts": "5.0.1",
     "react-timeseries-charts": "^0.16.1",
     "react-toastify": "^9.0.2",
-    "react-use-websocket": "^4.0.0",
+    "react-use-websocket": "^4.2.0",
     "ringjs": "^0.0.1",
     "serve": "^13.0.2",
     "uuid": "^8.3.2",

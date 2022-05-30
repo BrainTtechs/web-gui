@@ -20,6 +20,7 @@ function DownloadModal({
   nameOfFile,
   open,
   handleClose,
+  onSaved,
   messageHistory,
   setMessageHistory
 }) {
@@ -66,6 +67,8 @@ function DownloadModal({
           draggable: true,
           progress: undefined
         });
+        handleClose();
+        onSaved();
       })
       .catch((error) => {
         toast.error('Data saved succesfully!', {
@@ -78,8 +81,6 @@ function DownloadModal({
           progress: undefined
         });
       });
-
-    console.log('');
   };
 
   const getData = () => {
@@ -119,6 +120,8 @@ function DownloadModal({
       'text/plain'
     );
     handleClose();
+
+    onSaved();
   };
   return (
     <Modal

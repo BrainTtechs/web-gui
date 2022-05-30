@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Ring from 'ringjs';
 
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { COMMANDS } from '../Websocket/config';
+import { COMMANDS } from '../MainPage/config';
 
 import {
   TimeSeries,
@@ -37,6 +37,8 @@ const sec = 1000;
 const minute = 60 * sec;
 const hours = 60 * minute;
 
+export const initPulseHistory = () => localStorage.setItem('pulseHistory', '[');
+
 const Pulse = ({ startAdc }) => {
   const [initialTime, setInitialTime] = useState(new Date());
   //   const [time, setTime] = useState(new Date(2015, 0, 1));
@@ -55,7 +57,7 @@ const Pulse = ({ startAdc }) => {
   //  = useWebSocket('ws://192.168.43.243/ws');
 
   console.log({ lastMessage });
-  useEffect(() => localStorage.setItem('pulseHistory', '['), []);
+  useEffect(initPulseHistory , []);
 
   useEffect(() => {
     const stream = new Stream();
