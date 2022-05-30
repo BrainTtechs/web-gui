@@ -1,5 +1,5 @@
 import './App.css';
-import WebSocket from './Websocket';
+import WebSocket from './components/Websocket';
 
 function App() {
   return (

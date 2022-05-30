@@ -25,7 +25,8 @@ import Pulse from '../Pulse';
 
 const WebSocket = () => {
   const [socketUrl, setSocketUrl] = useState('ws://192.168.43.243/ws');
-  // const [messageHistory, setMessageHistory] = useState([]);
+  // const [socketUrl, setSocketUrl] = useState('ws://localhost:8080');
+  const [messageHistory, setMessageHistory] = useState([]);
   const [counter, setCounter] = useState(0);
   const [stop, setStop] = useState(false);
   const [open, setOpen] = useState(false);
