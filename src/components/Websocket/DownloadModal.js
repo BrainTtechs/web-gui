@@ -6,6 +6,12 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ReactStars from 'react-rating-stars-component';
 import { Button } from '@mui/material';
+import db from '../../utils/db';
+import { ref, set } from 'firebase/database';
+import { v4 as uuidv4 } from 'uuid';
+import { SaveOutlined } from '@mui/icons-material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { toast } from 'react-toastify';
 
 function DownloadModal({
   rating,
@@ -17,8 +23,8 @@ function DownloadModal({
   messageHistory,
   setMessageHistory
 }) {
-
   const onNameChange = (e) => setNameOfFile(e.target.value);
+  const [uploading, setUploading] = useState(false);
 
   const ratingChanged = (newRating) => {
     setRating(newRating);
@@ -37,6 +43,61 @@ function DownloadModal({
     px: 4,
     pb: 3
   };
+
+  const upload = () => {
+    setUploading(true);
+
+    const id = uuidv4();
+    const { fnirs, pulse, rating } = getData();
+    set(ref(db, 'archive/' + id), {
+      data: fnirs,
+      pulse,
+      rating
+    })
+      .then(() => {
+        console.log('Data saved succesfully');
+        setUploading(false);
+        toast.success('Data saved succesfully!', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+      })
+      .catch((error) => {
+        toast.error('Data saved succesfully!', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+      });
+
+    console.log('');
+  };
+
+  const getData = () => {
+    const saved = localStorage.getItem('messageHistory');
+    const newHistory =
+      saved === '[' ? saved.concat(']') : saved?.slice(0, -1).concat(']');
+    const fnirs = JSON.parse(newHistory);
+
+    const savedPulse = localStorage.getItem('pulseHistory');
+    const newHistoryPulse =
+      savedPulse === '['
+        ? savedPulse.concat(']')
+        : savedPulse?.slice(0, -1).concat(']');
+    const pulse = JSON.parse(newHistoryPulse);
+
+    return { fnirs, pulse, rating };
+  };
+
   const save = () => {
     function download(content, fileName, contentType) {
       var a = document.createElement('a');
@@ -46,20 +107,12 @@ function DownloadModal({
       a.click();
     }
 
-    const saved = localStorage.getItem('messageHistory');
-    const newHistory = saved?.slice(0, -1).concat(']');
-    console.log({ newHistory });
-    const d = JSON.parse(newHistory);
-
-    const savedPulse = localStorage.getItem('pulseHistory');
-    const newHistoryPulse = savedPulse?.slice(0, -1).concat(']');
-    console.log({ newHistoryPulse });
-    const dPulse = JSON.parse(newHistoryPulse);
+    const { fnirs, pulse, rating } = getData();
 
     download(
       JSON.stringify({
-        data: d,
-        pulse: dPulse,
+        data: fnirs,
+        pulse: pulse,
         rating: rating
       }),
       nameOfFile + '.json',
@@ -78,14 +131,10 @@ function DownloadModal({
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: 'end',
             alignItems: 'center'
           }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Do you want to download the history?
-          </Typography>
-
           <Button
             style={{
               fontSize: '5px',
@@ -150,12 +199,23 @@ function DownloadModal({
             variant="outlined"
           />
           <Button
+            variant="outlined"
             onClick={() => {
               save();
             }}
           >
             Download
           </Button>
+          <LoadingButton
+            onClick={upload}
+            disabled={nameOfFile !== ''}
+            loading={uploading}
+            loadingPosition="start"
+            startIcon={<SaveOutlined />}
+            variant="outlined"
+          >
+            Save
+          </LoadingButton>
         </div>
       </Box>
     </Modal>
