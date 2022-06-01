@@ -33,14 +33,25 @@ const MainPage = ({
   const [counter, setCounter] = useState(0);
   const [stop, setStop] = useState(false);
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [nameOfFile, setNameOfFile] = useState('foo');
   const [rating, setRating] = useState(0);
   const [fileData, setFileData] = useState(null);
   const [pulseResetState, setPulseReset] = useState(0);
   const [data, setData] = useState(getInitialData());
   const [value, setValue] = React.useState(0);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setStop(true);
+    setOpen(false);
+    setRating(0);
+    setFileData(null);
+    initMessageHistory();
+    initPulseHistory();
+    setData(getInitialData());
+    setCounter(0);
+    resetPulse();
+  };
 
   const resetPulse = () => {
     setPulseReset(pulseResetState + 1);
@@ -197,18 +208,7 @@ const MainPage = ({
           // messageHistory={messageHistory}
           // setMessageHistory={setMessageHistory}
           open={open}
-          onSaved={() => {
-            setStop(true);
-            setOpen(false);
-            setRating(0);
-            setFileData(null);
-            setData();
-            initMessageHistory();
-            initPulseHistory();
-            setData(getInitialData());
-            setCounter(0);
-            resetPulse();
-          }}
+          onSaved={() => {}}
           handleClose={handleClose}
         />
       </div>

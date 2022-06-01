@@ -94,6 +94,7 @@ function DownloadModal({
     setUploading(true);
 
     const id = uuidv4();
+    console.log({ id });
     const { fnirs, pulse, rating } = getData();
     set(ref(db, 'archive/' + id), {
       data: fnirs,
@@ -103,7 +104,7 @@ function DownloadModal({
       .then(() => {
         setUploading(false);
         toast.success('Data saved succesfully!');
-        handleClose();
+        // handleClose();
         onSaved();
       })
       .catch((error) => {
@@ -148,7 +149,7 @@ function DownloadModal({
       nameOfFile + '.json',
       'text/plain'
     );
-    handleClose();
+    // handleClose();
 
     onSaved();
   };
