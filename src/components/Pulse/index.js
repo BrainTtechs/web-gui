@@ -153,7 +153,7 @@ const Pulse = ({ startAdc, reset }) => {
   const timeRange = new TimeRange(beginTime, endTime);
 
   const charts = (
-    <ChartRow height="100">
+    <ChartRow height="80">
       <YAxis id="y" label="Value" min={55} max={200} width="70" type="linear" />
       <Charts>
         {/* <LineChart axis="y" series={s} style={style} /> */}

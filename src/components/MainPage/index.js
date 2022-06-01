@@ -12,6 +12,8 @@ import DataChart from '../Chart/DataChart';
 import { COMMANDS } from './config';
 import DownloadModal from './DownloadModal';
 import Pulse, { initPulseHistory } from '../Pulse';
+import { Fab } from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 // const mock = require('./Chart/sensor-example.json');
 
@@ -72,14 +74,10 @@ const MainPage = ({
     }
     if (lastMessage !== null) {
       const d = JSON.parse(lastMessage.data);
-      // setMessageHistory((prev) => prev.concat(d));
       const saved = localStorage.getItem('messageHistory');
-      console.log({ saved });
       const stringified = JSON.stringify(d) + ',';
       const newHistory = saved?.concat(stringified) || stringified;
-      console.log({ newHistory });
       localStorage.setItem('messageHistory', newHistory);
-      //   console.log({ d });
       const limit = 100;
       if (d.led === 740) {
         const f = (a) => {
@@ -176,9 +174,18 @@ const MainPage = ({
       />
       {lastMessage && !stop ? (
         <div>
-          <div>{x.led}</div>
           <pre style={{ fontSize: '28px' }}>
-            {x.adc1} {x.adc2} {x.adc3} {x.adc4} {x.rating}
+            <span>
+              <Fab sx={{ margin: 1 }} color="error" disabled={x.led !== 740}>
+                740
+              </Fab>
+              <Fab sx={{ margin: 1 }} color="error" disabled={x.led !== 850}>
+                850
+              </Fab>
+            </span>
+            <span>
+              {x.adc1} {x.adc2} {x.adc3} {x.adc4} {x.rating}
+            </span>
           </pre>
         </div>
       ) : null}

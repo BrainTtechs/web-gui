@@ -421,6 +421,8 @@ class MultiChannelChart extends React.Component {
     const { channels } = this.state;
     const { style, baseChannel } = this.props;
 
+    return <></>;
+
     return (
       <ChartContainer
         timeRange={channels[baseChannel].series.range()}
