@@ -9,10 +9,16 @@ import { Button, Stack } from '@mui/material';
 import db from '../../utils/db';
 import { ref, set, onValue, off } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
-import { SaveOutlined } from '@mui/icons-material';
+import {
+  SaveOutlined,
+  ThumbDownAltOutlined,
+  ThumbsUpDownOutlined,
+  ThumbUpAltOutlined
+} from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 
 function DownloadModal({
   rating,
@@ -75,9 +81,36 @@ function DownloadModal({
           pending: 'Machine Learning Algorithm is running...',
           success: {
             render({ data }) {
+              if (data == 0) {
+                return (
+                  <Stack direction="row">
+                    <div style={{ margin: 12 }}>
+                      <ThumbDownAltOutlined />
+                    </div>
+                    <span>
+                      Seems like this commercial <br />
+                      <b>did not</b> have an impact on you.
+                    </span>
+                  </Stack>
+                );
+              }
+              if (data == 1) {
+                return (
+                  <Stack direction="row">
+                    <div style={{ margin: 12 }}>
+                      <ThumbUpAltOutlined />
+                    </div>
+                    <span>
+                      Wow, you are influenced by this commercial.
+                    </span>
+                  </Stack>
+                );
+              }
               return `Result: ${data}`;
             },
-            icon: <CheckCircleOutlineIcon />
+            icon: false,
+            type: toast.info
+            // icon: <CheckCircleOutlineIcon />
           },
           error: 'Error'
         });
