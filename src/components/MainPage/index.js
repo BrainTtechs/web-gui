@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  showModal,
-  setShowModal
-} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ReadyState } from 'react-use-websocket';
 import Button from '@mui/material/Button';
 import DataChart from '../Chart/DataChart';
@@ -79,10 +73,10 @@ const MainPage = ({
       const newHistory = saved?.concat(stringified) || stringified;
       localStorage.setItem('messageHistory', newHistory);
       const limit = 100;
+      const f = (a) => {
+        return a.slice(-limit);
+      };
       if (d.led === 740) {
-        const f = (a) => {
-          return a.slice(-limit);
-        };
         setData({
           ...data,
           time: [...data.time, counter],
@@ -95,10 +89,10 @@ const MainPage = ({
         setData({
           ...data,
           time: [...data.time, counter],
-          p1_850: [...data.p1_850, d.adc1],
-          p2_850: [...data.p2_850, d.adc2],
-          p3_850: [...data.p3_850, d.adc3],
-          p4_850: [...data.p4_850, d.adc4]
+          p1_850: [...f(data.p1_850), d.adc1],
+          p2_850: [...f(data.p2_850), d.adc2],
+          p3_850: [...f(data.p3_850), d.adc3],
+          p4_850: [...f(data.p4_850), d.adc4]
         });
       }
       if (counter < limit) setCounter(counter + 1);
@@ -115,24 +109,21 @@ const MainPage = ({
 
   const x = lastMessage ? JSON.parse(lastMessage.data) : {};
 
-  const keyPress = useCallback(
-    (e) => {
-      console.log(e);
-      if (e.key === '1') {
-        sendMessage(COMMANDS.START_ALTERNATING);
-      } else if (e.key === '2') {
-        sendMessage(COMMANDS.START_740);
-      } else if (e.key === '3') {
-        sendMessage(COMMANDS.START_850);
-      } else if (e.key === ' ') {
-        // spacebar
-        setStop(true);
-        handleOpen();
-        setNameOfFile('');
-      }
-    },
-    [setShowModal, showModal]
-  );
+  const keyPress = useCallback((e) => {
+    console.log(e);
+    if (e.key === '1') {
+      sendMessage(COMMANDS.START_ALTERNATING);
+    } else if (e.key === '2') {
+      sendMessage(COMMANDS.START_740);
+    } else if (e.key === '3') {
+      sendMessage(COMMANDS.START_850);
+    } else if (e.key === ' ') {
+      // spacebar
+      setStop(true);
+      handleOpen();
+      setNameOfFile('');
+    }
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keyup', keyPress);
