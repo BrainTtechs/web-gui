@@ -39,25 +39,35 @@ const hours = 60 * minute;
 
 export const initPulseHistory = () => localStorage.setItem('pulseHistory', '[');
 
-const Pulse = ({ startAdc }) => {
+const Pulse = ({ startAdc, reset }) => {
   const [initialTime, setInitialTime] = useState(new Date());
   //   const [time, setTime] = useState(new Date(2015, 0, 1));
   const [time, setTime] = useState(new Date());
   const [started, setStarted] = useState(false);
   const [events, setEvents] = useState(new Ring(100));
+  const [bpm, setBpm] = useState('--');
+
   const {
     sendMessage,
     lastJsonMessage,
     lastMessage,
     readyState,
     getWebSocket
-  } =
-    //  = useWebSocket('ws://localhost:8080');
-    useWebSocket('ws://192.168.43.61:80/ws');
-  //  = useWebSocket('ws://192.168.43.243/ws');
+  } = useWebSocket('ws://192.168.43.61:80/ws');
 
-  console.log({ lastMessage });
-  useEffect(initPulseHistory , []);
+  useEffect(initPulseHistory, []);
+  useEffect(() => lastMessage?.data && setBpm(lastMessage.data), [lastMessage]);
+
+  const resetState = () => {
+    setInitialTime(new Date());
+    setTime(new Date());
+    setStarted(false);
+    setEvents(new Ring(100));
+    initPulseHistory();
+    setBpm('--');
+  };
+
+  useEffect(resetState, [reset]);
 
   useEffect(() => {
     const stream = new Stream();
@@ -131,7 +141,7 @@ const Pulse = ({ startAdc }) => {
   //   const initialBeginTime = new Date(2015, 0, 1);
   const initialBeginTime = initialTime;
   //   const timeWindow = 3 * hours;
-  const timeWindow = 10 * sec;
+  const timeWindow = 30 * sec;
 
   let beginTime;
   const endTime = new Date(time.getTime() + 200);
@@ -159,11 +169,6 @@ const Pulse = ({ startAdc }) => {
     borderColor: '#F4F4F4'
   };
 
-  // const style = styler([
-  //   { key: 'perc50', color: '#C5DCB7', width: 1, dashed: true },
-  //   { key: 'perc90', color: '#DFECD7', width: 2 }
-  // ]);
-
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
     [ReadyState.OPEN]: 'Open',
@@ -176,13 +181,11 @@ const Pulse = ({ startAdc }) => {
     <div>
       <div className="row">
         <div className="col-md-8">
-          <span style={dateStyle}>{latestTime}</span>
           <div>Pulsemeter: {connectionStatus}</div>
-          <pre style={{ fontSize: '28px' }}>
-            {lastMessage?.data || '--'} bpm
-          </pre>
+          <pre style={{ fontSize: '28px' }}>{bpm} bpm</pre>
         </div>
       </div>
+      <span style={dateStyle}>{latestTime}</span>
       <hr />
       <div className="row">
         <div className="col-md-12">
