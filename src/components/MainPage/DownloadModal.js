@@ -5,9 +5,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ReactStars from 'react-rating-stars-component';
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import db from '../../utils/db';
-import { ref, set } from 'firebase/database';
+import { ref, set, onValue, off } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
 import { SaveOutlined } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -45,7 +45,52 @@ function DownloadModal({
     pb: 3
   };
 
+  const guess = () => {
+    const id = uuidv4();
+    console.log({ id });
+    const { fnirs, pulse, rating } = getData();
+
+    const mlPromise = () =>
+      new Promise((resolve) => {
+        const listener = onValue(ref(db, 'result'), (snapshot) => {
+          if (snapshot.exists()) {
+            const result = snapshot.val();
+            if (result.id === id) {
+              console.log(result.rating);
+              resolve(result.rating);
+            }
+          }
+        });
+        setTimeout(() => off(ref(db, 'result'), listener), 20000);
+      });
+
+    set(ref(db, 'queue'), {
+      id,
+      data: fnirs,
+      pulse
+    })
+      .then(() => {
+        toast.promise(mlPromise, {
+          pending: 'Machine Learning Algorithm is running...',
+          // success: `Result: ${x == 1 ? '1' : '0'}`,
+          success: {
+            render({ data }) {
+              return `Result: ${data}`;
+            },
+            icon: '🟢'
+          },
+          error: 'Error'
+        });
+      })
+      .catch((error) => {
+        toast.error(error);
+        console.log(error);
+      });
+  };
+
   const upload = () => {
+    // set(ref(db, '/'), {});
+    // return;
     setUploading(true);
 
     const id = uuidv4();
@@ -56,30 +101,14 @@ function DownloadModal({
       rating
     })
       .then(() => {
-        console.log('Data saved succesfully');
         setUploading(false);
-        toast.success('Data saved succesfully!', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
+        toast.success('Data saved succesfully!');
         handleClose();
         onSaved();
       })
       .catch((error) => {
-        toast.error('Data saved succesfully!', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
+        toast.error(error);
+        console.log(error);
       });
   };
 
@@ -186,6 +215,7 @@ function DownloadModal({
         >
           {rating}
         </div>
+
         <div
           style={{
             display: 'flex',
@@ -193,32 +223,43 @@ function DownloadModal({
             marginTop: '1.5rem'
           }}
         >
-          <TextField
-            value={nameOfFile}
-            onChange={onNameChange}
-            size="small"
-            id="outlined-basic"
-            label="Name"
-            variant="outlined"
-          />
-          <Button
-            variant="outlined"
-            onClick={() => {
-              save();
-            }}
-          >
-            Download
-          </Button>
-          <LoadingButton
-            onClick={upload}
-            disabled={nameOfFile !== ''}
-            loading={uploading}
-            loadingPosition="start"
-            startIcon={<SaveOutlined />}
-            variant="outlined"
-          >
-            Save
-          </LoadingButton>
+          <Stack direction="row" spacing={1}>
+            <TextField
+              value={nameOfFile}
+              onChange={onNameChange}
+              size="small"
+              id="outlined-basic"
+              label="Name"
+              variant="outlined"
+            />
+            <Button
+              variant="outlined"
+              onClick={() => {
+                save();
+              }}
+            >
+              Download
+            </Button>
+            <LoadingButton
+              onClick={upload}
+              disabled={nameOfFile !== ''}
+              loading={uploading}
+              loadingPosition="start"
+              startIcon={<SaveOutlined />}
+              variant="outlined"
+            >
+              Save
+            </LoadingButton>
+            <LoadingButton
+              onClick={guess}
+              disabled={false}
+              loading={false}
+              loadingPosition="start"
+              variant="outlined"
+            >
+              Guess
+            </LoadingButton>
+          </Stack>
         </div>
       </Box>
     </Modal>

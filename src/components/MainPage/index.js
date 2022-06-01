@@ -72,7 +72,8 @@ const MainPage = ({
       const stringified = JSON.stringify(d) + ',';
       const newHistory = saved?.concat(stringified) || stringified;
       localStorage.setItem('messageHistory', newHistory);
-      const limit = 100;
+      // const limit = 100;
+      const limit = 50;
       const f = (a) => {
         return a.slice(-limit);
       };
