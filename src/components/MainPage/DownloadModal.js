@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { SaveOutlined } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'react-toastify';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 function DownloadModal({
   rating,
@@ -72,12 +73,11 @@ function DownloadModal({
       .then(() => {
         toast.promise(mlPromise, {
           pending: 'Machine Learning Algorithm is running...',
-          // success: `Result: ${x == 1 ? '1' : '0'}`,
           success: {
             render({ data }) {
               return `Result: ${data}`;
             },
-            icon: '🟢'
+            icon: <CheckCircleOutlineIcon />
           },
           error: 'Error'
         });
@@ -258,7 +258,7 @@ function DownloadModal({
               loadingPosition="start"
               variant="outlined"
             >
-              Guess
+              Predict
             </LoadingButton>
           </Stack>
         </div>
