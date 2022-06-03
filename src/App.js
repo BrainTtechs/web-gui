@@ -2,6 +2,7 @@ import { ToastContainer } from 'react-toastify';
 import './App.css';
 import WebSocket from './components/Websocket';
 import 'react-toastify/dist/ReactToastify.css';
+import UploadFile from './components/UploadFile';
 
 function App() {
   return (
@@ -16,9 +17,10 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme='dark'
+        theme="dark"
       />
       <WebSocket />
+      {/* <UploadFile /> */}
     </div>
   );
 }
