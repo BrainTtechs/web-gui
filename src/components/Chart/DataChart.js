@@ -2,7 +2,7 @@ import MultiChannelChart from './index';
 import { styler } from 'react-timeseries-charts';
 
 const DataChart = ({ data, disableTimerange, waveLength }) => {
-  const SCALE = 580; // length of the chart in y axis
+  const SCALE = 1150; // length of the chart in y axis
   const style = styler([
     { key: 'p1_740', color: '#d32f2f', width: 2 },
     { key: 'p2_740', color: '#1976d2', width: 2 },

@@ -151,7 +151,7 @@ class MultiChannelChart extends React.Component {
 
       rows.push(
         <ChartRow
-          height="50"
+          height={this.state.mode === 'multiaxis' ? '100' : '50'}
           visible={channels[channelName].show}
           key={`row-${channelName}`}
         >
@@ -262,7 +262,7 @@ class MultiChannelChart extends React.Component {
 
       rows.push(
         <ChartRow
-          height="50"
+          height={this.state.mode === 'multiaxis' ? '100' : '50'}
           visible={channels[channelName].show}
           key={`row-${channelName}`}
         >
@@ -405,7 +405,7 @@ class MultiChannelChart extends React.Component {
         onTimeRangeChanged={this.handleTimeRangeChange}
       >
         <ChartRow
-          height="50"
+          height={this.state.mode === 'multiaxis' ? '100' : '50'}
           trackerInfoValues={trackerInfoValues}
           trackerInfoHeight={10 + trackerInfoValues.length * 16}
           trackerInfoWidth={140}
@@ -623,7 +623,7 @@ class MultiChannelChart extends React.Component {
       <div>
         <div className="row">
           {this.renderMode()}
-          {this.renderModeOptions()}
+          {/* {this.renderModeOptions()} */}
         </div>
         <div className="row">
           <div className="col-md-12">
@@ -640,11 +640,11 @@ class MultiChannelChart extends React.Component {
             />
           </div>
 
-          <div className="col-md-6">
+          {/* <div className="col-md-6">
             {this.state.tracker
               ? `${moment.duration(+this.state.tracker).format()}`
               : '-:--:--'}
-          </div>
+          </div> */}
         </div>
         <div className="row">
           <div className="col-md-12">
