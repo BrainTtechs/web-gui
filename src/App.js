@@ -1,28 +1,10 @@
-import { ToastContainer } from 'react-toastify';
-import './App.css';
-import WebSocket from './components/Websocket';
-import 'react-toastify/dist/ReactToastify.css';
-import UploadFile from './components/UploadFile';
+import React from "react";
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import MiniDrawer from "./Demo";
+import Foo from "./Foo1";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-      <WebSocket />
-      {/* <UploadFile /> */}
-    </div>
+    <MiniDrawer />
   );
 }
-
-export default App;
