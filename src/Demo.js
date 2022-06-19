@@ -19,7 +19,7 @@ import ListItemText from "@mui/material/ListItemText";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import StarBorderPurple500Icon from "@mui/icons-material/StarBorderPurple500";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Foo1 from "./Foo1";
+import Foo1 from "./components/MainPage";
 import Foo2 from "./Foo2";
 import Foo3 from "./Foo3";
 
