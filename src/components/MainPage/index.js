@@ -53,8 +53,8 @@ const Item = styled(Paper)(({ theme }) => ({
 var initialTime = null;
 
 export default function MainPage({}) {
-  //const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
-  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+  const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
+  //const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
@@ -377,7 +377,7 @@ export default function MainPage({}) {
                 url={"videos/" + videos[value].id + ".mp4"}
                 width="100%"
                 height="100%"
-                volume={0}
+                volume={videos[value].id === 2 ? 0.3 : 0.5}
                 controls={false}
                 onStart={onStart}
                 onEnded={onEnded}
@@ -632,7 +632,7 @@ export default function MainPage({}) {
                         </Button>
                       </Box>
                       <Box>
-                        <ResponsiveContainer width="99%" height={400}>
+                        <ResponsiveContainer width="99%" height={500}>
                           <LineChart data={getData(true).fnirs}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey={"time"} />
@@ -643,21 +643,25 @@ export default function MainPage({}) {
                               type="monotone"
                               dataKey="adc1"
                               stroke="#8884d8"
+                              isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
                               dataKey="adc2"
                               stroke="#82ca9d"
+                              isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
                               dataKey="adc3"
                               stroke="#856245"
+                              isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
                               dataKey="adc4"
                               stroke="#000000"
+                              isAnimationActive={false}
                             />
                           </LineChart>
                         </ResponsiveContainer>
