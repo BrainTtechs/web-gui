@@ -42,6 +42,8 @@ import { v4 as uuidv4 } from "uuid";
 import db from "../../utils/db";
 import { ref, set, onValue, off } from "firebase/database";
 import Swal from "sweetalert2";
+import ReactStars from "react-rating-stars-component";
+import PsychologyIcon from "@mui/icons-material/Psychology";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -53,13 +55,14 @@ const Item = styled(Paper)(({ theme }) => ({
 var initialTime = null;
 
 export default function MainPage({}) {
-  const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
-  //const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+  //const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
+  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
   const [uploading, setUploading] = React.useState(false);
   const [playVideo, setPlayVideo] = React.useState(false);
+  const [rating, setRating] = React.useState(0);
 
   const [value, setValue] = React.useState("one");
   const upload = () => {
@@ -73,16 +76,16 @@ export default function MainPage({}) {
     set(ref(db, "fooo/" + id), {
       data: fnirs,
       pulse: pulse,
-      rating: videos[value].id,
+      video_id: videos[value].id,
+      rating: rating,
     }) /**pulse: pulse, */
       .then(() => {
         setUploading(false);
         Swal.fire({
-          icon: 'success',
-          title: 'Data Saved Successfully',
-          confirmButtonColor: "green",   
-
-        })
+          icon: "success",
+          title: "Data Saved Successfully",
+          confirmButtonColor: "green",
+        });
         handleClose();
       })
       .catch((error) => {
@@ -90,6 +93,9 @@ export default function MainPage({}) {
         handleClose();
         console.log(error);
       });
+  };
+  const ratingChanged = (newRating) => {
+    setRating(newRating);
   };
 
   const getInitialData = () => ({
@@ -157,7 +163,7 @@ export default function MainPage({}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     handleClose();
-    setPlayVideo(false)
+    setPlayVideo(false);
   };
   const sendMessageToggle = () => {
     sendMessage(COMMANDS.START_ALTERNATING);
@@ -187,7 +193,7 @@ export default function MainPage({}) {
     setStop(false);
     setPlayVideo(true);
     //refresh local storage
-    localStorage.clear()
+    localStorage.clear();
   };
 
   const onEnded = () => {
@@ -279,7 +285,7 @@ export default function MainPage({}) {
     const newHistory =
       saved === "[" ? saved.concat("]") : saved?.slice(0, -1).concat("]");
     const fnirs = JSON.parse(newHistory);
-    console.log(fnirs)
+    console.log(fnirs);
     if (isGraph) {
       while (fnirs.length > 100) {
         fnirs.splice(1, 1);
@@ -326,7 +332,7 @@ export default function MainPage({}) {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h6" noWrap>
+          <Typography variant="h5" noWrap>
             Place Your Finger To pulsemeter to start
           </Typography>
         </Box>
@@ -378,7 +384,7 @@ export default function MainPage({}) {
                 width="100%"
                 height="100%"
                 volume={videos[value].id === 2 ? 0.3 : 0.5}
-                controls={false}
+                controls={true}
                 onStart={onStart}
                 onEnded={onEnded}
                 playing={playVideo}
@@ -386,7 +392,19 @@ export default function MainPage({}) {
               />
 
               {open && (
-                <Stack direction="row" spacing={1}>
+                <Stack direction="column" spacing={1}>
+                  <ReactStars
+                    count={10}
+                    onChange={ratingChanged}
+                    size={28}
+                    activeColor="#ffd700"
+                    style={{
+                      margin: "0px",
+                      padding: "0px",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  />
                   <LoadingButton
                     onClick={upload}
                     disabled={nameOfFile !== ""}
@@ -419,28 +437,27 @@ export default function MainPage({}) {
                   <Item
                     style={{
                       height: "100%",
-                      width: "100%",
                     }}
                   >
-                    {/**
-                     * TODO : MarginTop will be fixed, that container will be centered
-                     */}
                     <Box
                       style={{
                         display: "flex",
-                        alignItems: "flex-start",
-                        marginTop: "16px",
+                        alignItems: "center",
+                        height: "100%",
+                        width: "100%",
+                      }}
+                      color="inherit"
+                      sx={{
+                        textTransform: "none",
                       }}
                     >
-                      <Box style={{ alignSelf: "center", padding: "10px" }}>
-                        <SignalWifi4BarIcon />
-                      </Box>
-                      <Box style={{ alignSelf: "center" }}>
+                      <SignalWifi4BarIcon fontSize="large" />
+                      <Box style={{ marginLeft: "10px" }}>
                         <Pulse
                           startAdc={() => {
                             sendMessageToggle();
                             setStop(false);
-                            setPlayVideo(true)
+                            setPlayVideo(true);
                           }}
                           bpm={bpm}
                           setBpm={setBpm}
@@ -448,31 +465,9 @@ export default function MainPage({}) {
                           getData={getData}
                           initialTime={initialTime}
                         />
-                        <Typography
-                          variant="body2"
-                          style={{ textAlign: "start" }}
-                        >
-                          fNIRS :{connectionStatus}
+                        <Typography variant="h5" style={{ textAlign: "start" }}>
+                          &nbsp; fNIRS : &nbsp; {connectionStatus}
                         </Typography>
-                      </Box>
-                      <Box
-                        style={{
-                          textAlign: "end",
-                          marginLeft: "auto",
-                          width: "160px",
-                        }}
-                      >
-                        {/* <Button
-                          color="inherit"
-                          style={{ margin: 5, maxWidth: "140px" }}
-                          variant="outlined"
-                          onClick={() => {
-                            localStorage.clear()
-                          }}
-                          disabled={readyState !== ReadyState.OPEN}
-                        >
-                          Refresh Storage
-                        </Button> */}
                       </Box>
                     </Box>
                   </Item>
@@ -486,23 +481,18 @@ export default function MainPage({}) {
                     <Box
                       style={{
                         display: "flex",
-                        justifyContent: "flex-start",
+                        alignItems: "center",
                         height: "100%",
                         width: "100%",
                       }}
-                      component={Button}
                       color="inherit"
                       sx={{
                         textTransform: "none",
                       }}
-                      onClick={handleOpenModalHR}
                     >
-                      <MonitorHeartIcon />
-                      <Typography
-                        variant="body2"
-                        style={{ marginLeft: "10px" }}
-                      >
-                        Hearth Rate : &nbsp;
+                      <MonitorHeartIcon fontSize="large" />
+                      <Typography variant="h5">
+                        &nbsp; Hearth Rate : &nbsp;
                         {bpm}
                         &nbsp;bpm
                       </Typography>
@@ -524,23 +514,24 @@ export default function MainPage({}) {
                       }}
                       component={Button}
                       color="inherit"
+                      sx={{
+                        padding: 0,
+                      }}
                       onClick={handleOpenModalfNirs}
                     >
-                      <Box style={{ alignSelf: "center" }}>
-                        <Icon icon="mdi:brain" width="24" height="24" />
-                      </Box>
+                      <PsychologyIcon fontSize="large" />
                       <Box style={{ display: "flex" }}>
                         <Typography
-                          variant="body2"
-                          style={{ textAlign: "start", marginLeft: "10px" }}
+                          variant="h5"
+                          style={{ textAlign: "start" }}
                           sx={{
                             textTransform: "none",
                           }}
                         >
-                          fNIRS&nbsp;
+                          &nbsp; fNIRS&nbsp;
                         </Typography>
                         <Typography
-                          variant="body2"
+                          variant="h5"
                           style={{ textAlign: "start", marginLeft: "10px" }}
                         >
                           {x.adc1} {x.adc2} {x.adc3} {x.adc4}

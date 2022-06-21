@@ -17,6 +17,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-player": "^2.10.1",
+    "react-rating-stars-component": "^2.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.0.4",
