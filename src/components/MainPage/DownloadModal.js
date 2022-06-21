@@ -4,7 +4,6 @@ import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { Button, Stack } from "@mui/material";
 import db from "../../utils/db";
 import { ref, set, onValue, off } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +13,8 @@ import {
   ThumbUpAltOutlined,
 } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { Button, Stack } from "@mui/material";
+
 import { toast } from "react-toastify";
 
 function DownloadModal({
@@ -154,7 +155,7 @@ function DownloadModal({
     return { fnirs, pulse };
   };
 
-  const save = () => {
+  /*const save = () => {
     function download(content, fileName, contentType) {
       var a = document.createElement("a");
       var file = new Blob([content], { type: contentType });
@@ -176,95 +177,97 @@ function DownloadModal({
     // handleClose();
 
     onSaved();
-  };
+  };*/
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={styleModal}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            style={{
-              fontSize: "5px",
-              margin: "0px",
-              padding: "0px",
-              height: "24px",
-              justifyContent: "flex-end",
-              minWidth: "min-content",
-            }}
-            onClick={handleClose}
-          >
-            <CloseIcon fontSize="small" />
-          </Button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-            <TextField
-              value={nameOfFile}
-              onChange={onNameChange}
-              size="small"
-              id="outlined-basic"
-              label="Name"
-              variant="outlined"
-              sx={{
-                width: "100%",
-                marginTop:"10px"
-              }}
-            />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "1.5rem",
-          }}
-        >
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                save();
-              }}
-            >
-              Download
-            </Button>
-            <LoadingButton
-              onClick={upload}
-              disabled={nameOfFile !== ""}
-              loading={uploading}
-              loadingPosition="start"
-              startIcon={<SaveOutlined />}
-              variant="outlined"
-            >
-              Save
-            </LoadingButton>
-            <LoadingButton
-              onClick={guess}
-              disabled={false}
-              loading={false}
-              loadingPosition="start"
-              variant="outlined"
-            >
-              Predict
-            </LoadingButton>
-          </Stack>
-        </div>
-      </Box>
-    </Modal>
+    // <Modal
+    //   open={open}
+    //   onClose={handleClose}
+    //   aria-labelledby="modal-modal-title"
+    //   aria-describedby="modal-modal-description"
+    // >
+    //   <Box sx={styleModal}>
+    //     <div
+    //       style={{
+    //         display: "flex",
+    //         justifyContent: "end",
+    //         alignItems: "center",
+    //       }}
+    //     >
+    //       <Button
+    //         style={{
+    //           fontSize: "5px",
+    //           margin: "0px",
+    //           padding: "0px",
+    //           height: "24px",
+    //           justifyContent: "flex-end",
+    //           minWidth: "min-content",
+    //         }}
+    //         onClick={handleClose}
+    //       >
+    //         <CloseIcon fontSize="small" />
+    //       </Button>
+    //     </div>
+    //     <div
+    //       style={{
+    //         display: "flex",
+    //         justifyContent: "center",
+    //         alignItems: "center",
+    //       }}
+    //     >
+    //       <TextField
+    //         value={nameOfFile}
+    //         onChange={onNameChange}
+    //         size="small"
+    //         id="outlined-basic"
+    //         label="Name"
+    //         variant="outlined"
+    //         sx={{
+    //           width: "100%",
+    //           marginTop: "10px",
+    //         }}
+    //       />
+    //     </div>
+    //     <div
+    //       style={{
+    //         display: "flex",
+    //         justifyContent: "center",
+    //         marginTop: "1.5rem",
+    //       }}
+    //     >
+    //       <Stack direction="row" spacing={1}>
+    //         <Button
+    //           variant="outlined"
+    //           onClick={() => {
+    //             save();
+    //           }}
+    //         >
+    //           Download
+    //         </Button>
+    //         <LoadingButton
+    //           onClick={upload}
+    //           disabled={nameOfFile !== ""}
+    //           loading={uploading}
+    //           loadingPosition="start"
+    //           startIcon={<SaveOutlined />}
+    //           variant="outlined"
+    //         >
+    //           Save
+    //         </LoadingButton>
+    //         <LoadingButton
+    //           onClick={guess}
+    //           disabled={false}
+    //           loading={false}
+    //           loadingPosition="start"
+    //           variant="outlined"
+    //         >
+    //           Predict
+    //         </LoadingButton>
+    //       </Stack>
+    //     </div>
+    //   </Box>
+    // </Modal>
+    <div>
+      </div>
   );
 }
 

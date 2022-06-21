@@ -19,7 +19,7 @@ import ListItemText from "@mui/material/ListItemText";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import StarBorderPurple500Icon from "@mui/icons-material/StarBorderPurple500";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Foo1 from "./components/MainPage";
+import MainPage from "./components/MainPage";
 import Foo2 from "./Foo2";
 import Foo3 from "./Foo3";
 
@@ -90,7 +90,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function MiniDrawer() {
+export default function Frame() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [index, setIndex] = React.useState(0);
@@ -180,7 +180,7 @@ export default function MiniDrawer() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader style={{ minHeight: "64px" }} />
         
-        {index === 0 ? <Foo1 /> : index === 1 ? <Foo2 /> : <Foo3 />}
+        {index === 0 ? <MainPage /> : index === 1 ? <Foo2 /> : <Foo3 />}
       </Box>
     </Box>
   );

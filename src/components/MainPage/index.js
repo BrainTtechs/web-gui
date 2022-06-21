@@ -23,6 +23,25 @@ import Pulse, { initPulseHistory } from "../Pulse";
 import { ReadyState } from "react-use-websocket";
 import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
+import { SaveOutlined } from "@mui/icons-material";
+import useWebSocket from "react-use-websocket";
+import {
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Stack } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
+
+import db from "../../utils/db";
+import { ref, set, onValue, off } from "firebase/database";
+import Swal from "sweetalert2";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -31,16 +50,45 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
+var initialTime = null;
 
-export default function ColorTabs({
-  sendMessage,
-  socketUrl,
-  lastMessage,
-  readyState,
-  getWebSocket,
-}) {
+export default function MainPage({}) {
+  //const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
+  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+
+  const { sendMessage, lastMessage, readyState, getWebSocket } =
+    useWebSocket(socketUrl);
+  const [uploading, setUploading] = React.useState(false);
+
   const [value, setValue] = React.useState("one");
-  const [fullscreenMode, setFullscreenMode] = React.useState(false);
+  const upload = () => {
+    // set(ref(db, '/'), {});
+    // return;
+    setUploading(true);
+
+    const id = uuidv4();
+    console.log({ id });
+    const { fnirs } = getData(false);
+    set(ref(db, "fooo/" + id), {
+      data: fnirs,
+      rating: videos[value].id,
+    }) /**pulse: pulse, */
+      .then(() => {
+        setUploading(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Data Saved Successfully',
+          confirmButtonColor: "green",   
+
+        })
+        handleClose();
+      })
+      .catch((error) => {
+        Swal.fire("Data Cannot Be Saved!", "fail");
+        handleClose();
+        console.log(error);
+      });
+  };
 
   const getInitialData = () => ({
     time: [],
@@ -75,6 +123,7 @@ export default function ColorTabs({
     setData(getInitialData());
     setCounter(0);
     resetPulse();
+    initialTime = null;
   };
 
   const handlefNirsClose = () => {
@@ -98,17 +147,16 @@ export default function ColorTabs({
   };
 
   let player = null;
-  const ref = (p) => {
+  const refer = (p) => {
     player = p;
   };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    handleClose();
   };
   const sendMessageToggle = () => {
-    if (value === 0) sendMessage(COMMANDS.START_ALTERNATING);
-    else if (value === 1) sendMessage(COMMANDS.START_740);
-    else if (value === 2) sendMessage(COMMANDS.START_850);
+    sendMessage(COMMANDS.START_ALTERNATING);
   };
 
   const videos = {
@@ -131,24 +179,13 @@ export default function ColorTabs({
   };
 
   const onStart = () => {
-    if (!fullscreenMode) {
-      findDOMNode(player)
-        .requestFullscreen()
-        .catch((err) => {
-          toast.error("Could not activate full-screen mode :(");
-        });
-      setFullscreenMode(true);
-    }
+    sendMessageToggle();
+    setStop(false);
   };
 
   const onEnded = () => {
-    if (fullscreenMode) {
-      document.exitFullscreen().catch((err) => {
-        toast.error("Could not exit full-screen mode :(");
-      });
-      setFullscreenMode(false);
-    }
-    setOpen(true);
+    setStop(true);
+    handleOpen();
   };
 
   React.useEffect(() => {
@@ -156,13 +193,23 @@ export default function ColorTabs({
       // getWebSocket().close();
       return;
     }
-    console.log(lastMessage);
     if (lastMessage !== undefined && lastMessage !== null) {
       const d = JSON.parse(lastMessage.data);
+      const time = new Date().getTime();
+      const str = String(time); // 👉️ '6789'
+      const num = ((str / 1000) * 10) / 3;
+      const t = num.toFixed(1);
+      const x = getData().fnirs[1];
+      if (x) d.time = Number((t - initialTime).toFixed(1));
+      else {
+        if (initialTime === null) initialTime = t;
+        d.time = 0;
+      }
       const saved = localStorage.getItem("messageHistory");
       const stringified = JSON.stringify(d) + ",";
       const newHistory = saved?.concat(stringified) || stringified;
       localStorage.setItem("messageHistory", newHistory);
+      console.log(newHistory, "newhistory");
       // const limit = 100;
       const limit = 50;
       const f = (a) => {
@@ -200,7 +247,7 @@ export default function ColorTabs({
   }[readyState];
 
   const x = lastMessage ? JSON.parse(lastMessage.data) : {};
-
+  console.log(x);
   const keyPress = React.useCallback((e) => {
     console.log(e);
     if (e.key === "1") {
@@ -216,6 +263,33 @@ export default function ColorTabs({
       setNameOfFile("");
     }
   }, []);
+  const getData = (isGraph) => {
+    var saved = localStorage.getItem("messageHistory");
+    if (saved === null) {
+      initMessageHistory();
+      saved = localStorage.getItem("messageHistory");
+    }
+    const newHistory =
+      saved === "[" ? saved.concat("]") : saved?.slice(0, -1).concat("]");
+    const fnirs = JSON.parse(newHistory);
+    if (isGraph) {
+      while (fnirs.length > 100) {
+        fnirs.splice(1, 1);
+      }
+    }
+    var savedPulse = localStorage.getItem("pulseHistory");
+    if (savedPulse === null) {
+      initPulseHistory();
+      savedPulse = localStorage.getItem("pulseHistory");
+    }
+    const newHistoryPulse =
+      savedPulse === "["
+        ? savedPulse.concat("]")
+        : savedPulse?.slice(0, -1).concat("]");
+    const pulse = JSON.parse(newHistoryPulse);
+
+    return { fnirs, pulse };
+  };
 
   React.useEffect(() => {
     document.addEventListener("keyup", keyPress);
@@ -295,8 +369,26 @@ export default function ColorTabs({
                 controls={true}
                 onStart={onStart}
                 onEnded={onEnded}
-                ref={ref}
+                ref={refer}
               />
+              {open && (
+                <Stack direction="row" spacing={1}>
+                  <LoadingButton
+                    onClick={upload}
+                    disabled={nameOfFile !== ""}
+                    loading={uploading}
+                    loadingPosition="start"
+                    startIcon={<SaveOutlined />}
+                    variant="outlined"
+                    sx={{
+                      width: "100%",
+                      marginTop: "10px",
+                    }}
+                  >
+                    Save
+                  </LoadingButton>
+                </Stack>
+              )}
             </Grid>
             <Grid item xs={4}>
               {
@@ -344,20 +436,27 @@ export default function ColorTabs({
                           variant="body2"
                           style={{ textAlign: "start" }}
                         >
-                          fNIRS : &nbsp;
-                          {connectionStatus}
+                          fNIRS :{connectionStatus}
                         </Typography>
                       </Box>
-                      <Box style={{ alignSelf: "center", marginLeft: "auto" }}>
-                        <IconButton
+                      <Box
+                        style={{
+                          textAlign: "end",
+                          marginLeft: "auto",
+                          width: "160px",
+                        }}
+                      >
+                        <Button
                           color="inherit"
-                          aria-label="add to shopping cart"
-                          style={{
-                            display: "block",
+                          style={{ margin: 5, maxWidth: "140px" }}
+                          variant="outlined"
+                          onClick={() => {
+                            window.location.reload();
                           }}
+                          disabled={readyState !== ReadyState.OPEN}
                         >
-                          <RefreshIcon />
-                        </IconButton>
+                          Refresh Page
+                        </Button>
                       </Box>
                     </Box>
                   </Item>
@@ -432,7 +531,7 @@ export default function ColorTabs({
                         </Typography>
                       </Box>
                     </Box>
-                    <DownloadModal
+                    {/* <DownloadModal
                       setNameOfFile={setNameOfFile}
                       nameOfFile={nameOfFile}
                       // messageHistory={messageHistory}
@@ -440,7 +539,7 @@ export default function ColorTabs({
                       open={open}
                       onSaved={() => {}}
                       handleClose={handleClose}
-                    />
+                    /> */}
                   </Item>
 
                   <Modal
@@ -517,7 +616,35 @@ export default function ColorTabs({
                         </Button>
                       </Box>
                       <Box>
-                        <ChartX />
+                        <ResponsiveContainer width="99%" height={400}>
+                          <LineChart data={getData(true).fnirs}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey={"time"} />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line
+                              type="monotone"
+                              dataKey="adc1"
+                              stroke="#8884d8"
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="adc2"
+                              stroke="#82ca9d"
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="adc3"
+                              stroke="#856245"
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="adc4"
+                              stroke="#000000"
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
                       </Box>{" "}
                     </Box>
                   </Modal>
