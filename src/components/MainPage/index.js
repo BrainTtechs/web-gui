@@ -59,6 +59,7 @@ export default function MainPage({}) {
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
   const [uploading, setUploading] = React.useState(false);
+  const [playVideo, setPlayVideo] = React.useState(false);
 
   const [value, setValue] = React.useState("one");
   const upload = () => {
@@ -68,9 +69,10 @@ export default function MainPage({}) {
 
     const id = uuidv4();
     console.log({ id });
-    const { fnirs } = getData(false);
+    const { fnirs, pulse } = getData(false);
     set(ref(db, "fooo/" + id), {
       data: fnirs,
+      pulse: pulse,
       rating: videos[value].id,
     }) /**pulse: pulse, */
       .then(() => {
@@ -123,6 +125,7 @@ export default function MainPage({}) {
     setData(getInitialData());
     setCounter(0);
     resetPulse();
+    setPlayVideo(false);
     initialTime = null;
   };
 
@@ -154,6 +157,7 @@ export default function MainPage({}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     handleClose();
+    setPlayVideo(false)
   };
   const sendMessageToggle = () => {
     sendMessage(COMMANDS.START_ALTERNATING);
@@ -181,11 +185,15 @@ export default function MainPage({}) {
   const onStart = () => {
     sendMessageToggle();
     setStop(false);
+    setPlayVideo(true);
+    //refresh local storage
+    localStorage.clear()
   };
 
   const onEnded = () => {
     setStop(true);
     handleOpen();
+    setPlayVideo(false);
   };
 
   React.useEffect(() => {
@@ -209,7 +217,7 @@ export default function MainPage({}) {
       const stringified = JSON.stringify(d) + ",";
       const newHistory = saved?.concat(stringified) || stringified;
       localStorage.setItem("messageHistory", newHistory);
-      console.log(newHistory, "newhistory");
+      // console.log(newHistory, "newhistory");
       // const limit = 100;
       const limit = 50;
       const f = (a) => {
@@ -247,7 +255,6 @@ export default function MainPage({}) {
   }[readyState];
 
   const x = lastMessage ? JSON.parse(lastMessage.data) : {};
-  console.log(x);
   const keyPress = React.useCallback((e) => {
     console.log(e);
     if (e.key === "1") {
@@ -272,6 +279,7 @@ export default function MainPage({}) {
     const newHistory =
       saved === "[" ? saved.concat("]") : saved?.slice(0, -1).concat("]");
     const fnirs = JSON.parse(newHistory);
+    console.log(fnirs)
     if (isGraph) {
       while (fnirs.length > 100) {
         fnirs.splice(1, 1);
@@ -287,7 +295,11 @@ export default function MainPage({}) {
         ? savedPulse.concat("]")
         : savedPulse?.slice(0, -1).concat("]");
     const pulse = JSON.parse(newHistoryPulse);
-
+    if (isGraph) {
+      while (pulse.length > 100) {
+        pulse.splice(1, 1);
+      }
+    }
     return { fnirs, pulse };
   };
 
@@ -361,16 +373,18 @@ export default function MainPage({}) {
           <Grid container spacing={3}>
             <Grid item xs={8}>
               <ReactPlayer
-                className="react-player fixed-bottom"
+                className="react-player "
                 url={"videos/" + videos[value].id + ".mp4"}
                 width="100%"
-                height="80%"
-                volume={videos[value].id === 2 ? 0.3 : 0.5}
-                controls={true}
+                height="100%"
+                volume={0}
+                controls={false}
                 onStart={onStart}
                 onEnded={onEnded}
+                playing={playVideo}
                 ref={refer}
               />
+
               {open && (
                 <Stack direction="row" spacing={1}>
                   <LoadingButton
@@ -382,7 +396,6 @@ export default function MainPage({}) {
                     variant="outlined"
                     sx={{
                       width: "100%",
-                      marginTop: "10px",
                     }}
                   >
                     Save
@@ -399,7 +412,7 @@ export default function MainPage({}) {
                 direction="column"
                 spacing={1}
                 style={{
-                  height: "80%",
+                  height: "110%",
                 }}
               >
                 <Grid item xs style={{ flexGrow: 1 }}>
@@ -427,10 +440,13 @@ export default function MainPage({}) {
                           startAdc={() => {
                             sendMessageToggle();
                             setStop(false);
+                            setPlayVideo(true)
                           }}
                           bpm={bpm}
                           setBpm={setBpm}
                           reset={pulseResetState}
+                          getData={getData}
+                          initialTime={initialTime}
                         />
                         <Typography
                           variant="body2"
@@ -446,17 +462,17 @@ export default function MainPage({}) {
                           width: "160px",
                         }}
                       >
-                        <Button
+                        {/* <Button
                           color="inherit"
                           style={{ margin: 5, maxWidth: "140px" }}
                           variant="outlined"
                           onClick={() => {
-                            window.location.reload();
+                            localStorage.clear()
                           }}
                           disabled={readyState !== ReadyState.OPEN}
                         >
-                          Refresh Page
-                        </Button>
+                          Refresh Storage
+                        </Button> */}
                       </Box>
                     </Box>
                   </Item>

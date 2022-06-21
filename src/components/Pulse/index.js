@@ -21,8 +21,9 @@ const hours = 60 * minute;
 
 export const initPulseHistory = () => localStorage.setItem('pulseHistory', '[');
 
-const Pulse = ({ startAdc, reset , bpm, setBpm }) => {
+const Pulse = ({ startAdc, reset , bpm, setBpm}) => {
   const [initialTime, setInitialTime] = useState(new Date());
+
   //   const [time, setTime] = useState(new Date(2015, 0, 1));
   const [time, setTime] = useState(new Date());
   const [started, setStarted] = useState(false);
@@ -40,7 +41,6 @@ const Pulse = ({ startAdc, reset , bpm, setBpm }) => {
   useEffect(() => lastMessage?.data && setBpm(lastMessage.data), [lastMessage]);
 
   const resetState = () => {
-    setInitialTime(new Date());
     setTime(new Date());
     setStarted(false);
     setEvents(new Ring(100));
@@ -123,16 +123,6 @@ const Pulse = ({ startAdc, reset , bpm, setBpm }) => {
   const initialBeginTime = initialTime;
   //   const timeWindow = 3 * hours;
   const timeWindow = 30 * sec;
-
-  let beginTime;
-  const endTime = new Date(time.getTime() + 200);
-  if (endTime.getTime() - timeWindow < initialBeginTime.getTime()) {
-    beginTime = initialBeginTime;
-  } else {
-    beginTime = new Date(endTime.getTime() - timeWindow);
-  }
-  const timeRange = new TimeRange(beginTime, endTime);
-
 
   const dateStyle = {
     fontSize: 12,
