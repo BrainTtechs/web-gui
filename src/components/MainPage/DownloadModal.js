@@ -16,6 +16,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, Stack } from "@mui/material";
 
 import { toast } from "react-toastify";
+import Rating from '@mui/material/Rating';
 
 function DownloadModal({
   setNameOfFile,
@@ -25,9 +26,12 @@ function DownloadModal({
   onSaved,
   messageHistory,
   setMessageHistory,
+  mode
 }) {
   const onNameChange = (e) => setNameOfFile(e.target.value);
   const [uploading, setUploading] = useState(false);
+  const [predictScore, setPredictScore] = useState(0);
+  const [trainingScore, setTrainingScore] = useState(0);
 
   const styleModal = {
     position: "absolute",
@@ -44,6 +48,7 @@ function DownloadModal({
   };
 
   const guess = () => {
+    setPredictScore(3);
     /*const id = uuidv4();
     console.log({ id });
     const { fnirs, pulse } = getData();
@@ -178,96 +183,118 @@ function DownloadModal({
 
     onSaved();
   };*/
+
+  const handleRating = (e, newValue) => {
+    console.log(newValue);
+    setTrainingScore(newValue);
+  }
+
   return (
-    // <Modal
-    //   open={open}
-    //   onClose={handleClose}
-    //   aria-labelledby="modal-modal-title"
-    //   aria-describedby="modal-modal-description"
-    // >
-    //   <Box sx={styleModal}>
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         justifyContent: "end",
-    //         alignItems: "center",
-    //       }}
-    //     >
-    //       <Button
-    //         style={{
-    //           fontSize: "5px",
-    //           margin: "0px",
-    //           padding: "0px",
-    //           height: "24px",
-    //           justifyContent: "flex-end",
-    //           minWidth: "min-content",
-    //         }}
-    //         onClick={handleClose}
-    //       >
-    //         <CloseIcon fontSize="small" />
-    //       </Button>
-    //     </div>
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         justifyContent: "center",
-    //         alignItems: "center",
-    //       }}
-    //     >
-    //       <TextField
-    //         value={nameOfFile}
-    //         onChange={onNameChange}
-    //         size="small"
-    //         id="outlined-basic"
-    //         label="Name"
-    //         variant="outlined"
-    //         sx={{
-    //           width: "100%",
-    //           marginTop: "10px",
-    //         }}
-    //       />
-    //     </div>
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         justifyContent: "center",
-    //         marginTop: "1.5rem",
-    //       }}
-    //     >
-    //       <Stack direction="row" spacing={1}>
-    //         <Button
-    //           variant="outlined"
-    //           onClick={() => {
-    //             save();
-    //           }}
-    //         >
-    //           Download
-    //         </Button>
-    //         <LoadingButton
-    //           onClick={upload}
-    //           disabled={nameOfFile !== ""}
-    //           loading={uploading}
-    //           loadingPosition="start"
-    //           startIcon={<SaveOutlined />}
-    //           variant="outlined"
-    //         >
-    //           Save
-    //         </LoadingButton>
-    //         <LoadingButton
-    //           onClick={guess}
-    //           disabled={false}
-    //           loading={false}
-    //           loadingPosition="start"
-    //           variant="outlined"
-    //         >
-    //           Predict
-    //         </LoadingButton>
-    //       </Stack>
-    //     </div>
-    //   </Box>
-    // </Modal>
-    <div>
-      </div>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={styleModal}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            style={{
+              fontSize: "5px",
+              margin: "0px",
+              padding: "0px",
+              height: "24px",
+              justifyContent: "flex-end",
+              minWidth: "min-content",
+            }}
+            onClick={handleClose}
+          >
+            <CloseIcon fontSize="small" />
+          </Button>
+        </div>
+        <div>
+          {mode === 'Training' ? 
+            <Rating 
+              style={{ margin: '5px' }} name="rating" value={null} max={4} 
+              onChange={handleRating}
+            /> 
+            :  
+            <Rating 
+              style={{ margin: '5px' }} name="rating" value={predictScore} max={4} readOnly
+            />
+          }
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+            <TextField
+              value={nameOfFile}
+              onChange={onNameChange}
+              size="small"
+              id="outlined-basic"
+              label="Name"
+              variant="outlined"
+              sx={{
+                width: "100%",
+                marginTop:"10px"
+              }}
+            />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "1.5rem",
+          }}
+        >
+          <Stack direction="row" spacing={1}>
+            {mode === 'Training' ? 
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  save();
+                }}
+              >
+                Download
+              </Button> : null
+            }
+            {mode === 'Training' ? 
+              <LoadingButton
+                onClick={upload}
+                disabled={nameOfFile !== ""}
+                loading={uploading}
+                loadingPosition="start"
+                startIcon={<SaveOutlined />}
+                variant="outlined"
+              >
+                Save
+              </LoadingButton> : null
+            }
+            {mode === 'Predict' ? 
+              <LoadingButton
+                onClick={guess}
+                disabled={false}
+                loading={false}
+                loadingPosition="start"
+                variant="outlined"
+              >
+                Predict
+              </LoadingButton> : null
+            }
+          </Stack>
+        </div>
+      </Box>
+    </Modal>
   );
 }
 

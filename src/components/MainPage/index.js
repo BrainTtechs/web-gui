@@ -61,6 +61,14 @@ export default function MainPage({}) {
   const [uploading, setUploading] = React.useState(false);
   const [playVideo, setPlayVideo] = React.useState(false);
 
+export default function ColorTabs({
+  sendMessage,
+  socketUrl,
+  lastMessage,
+  readyState,
+  getWebSocket,
+  mode
+}) {
   const [value, setValue] = React.useState("one");
   const upload = () => {
     // set(ref(db, '/'), {});
@@ -91,6 +99,8 @@ export default function MainPage({}) {
         console.log(error);
       });
   };
+
+  console.log(mode);
 
   const getInitialData = () => ({
     time: [],
@@ -547,7 +557,7 @@ export default function MainPage({}) {
                         </Typography>
                       </Box>
                     </Box>
-                    {/* <DownloadModal
+                    { <DownloadModal
                       setNameOfFile={setNameOfFile}
                       nameOfFile={nameOfFile}
                       // messageHistory={messageHistory}
@@ -555,7 +565,8 @@ export default function MainPage({}) {
                       open={open}
                       onSaved={() => {}}
                       handleClose={handleClose}
-                    /> */}
+                      mode={mode}
+                    />}
                   </Item>
 
                   <Modal

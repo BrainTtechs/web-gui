@@ -180,7 +180,7 @@ export default function Frame() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader style={{ minHeight: "64px" }} />
         
-        {index === 0 ? <MainPage /> : index === 1 ? <Foo2 /> : <Foo3 />}
+        {index === 0 ? <Foo1 mode={"Training"}/> : index === 1 ? <Foo1 mode={"Predict"} /> : <Foo3 />}
       </Box>
     </Box>
   );
