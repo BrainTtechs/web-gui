@@ -64,7 +64,7 @@ export default function MainPage({}) {
   const [uploading, setUploading] = React.useState(false);
   const [playVideo, setPlayVideo] = React.useState(false);
   const [rating, setRating] = React.useState(0);
-const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [predictError, setPredictError] = React.useState(false);
   const [value, setValue] = React.useState("one");
   const upload = () => {
@@ -142,7 +142,7 @@ const [loading, setLoading] = React.useState(false);
   };
 
   const handleCloseLoading = () => {
-    setLoading(false)
+    setLoading(false);
   };
 
   const handleOpenModalfNirs = () => {
@@ -197,7 +197,7 @@ const [loading, setLoading] = React.useState(false);
     const { fnirs, pulse } = getData();
     const mlPromise = () =>
       new Promise((resolve) => {
-        const listener = onValue(ref(db, 'result'), (snapshot) => {
+        const listener = onValue(ref(db, "result"), (snapshot) => {
           if (snapshot.exists()) {
             const result = snapshot.val();
             if (result.id === id) {
@@ -207,16 +207,16 @@ const [loading, setLoading] = React.useState(false);
             }
           }
         });
-        setTimeout(() => off(ref(db, 'result'), listener), 20000);
+        setTimeout(() => off(ref(db, "result"), listener), 20000);
       });
 
-    set(ref(db, 'queue'), {
+    set(ref(db, "queue"), {
       id,
       data: fnirs,
-      pulse
+      pulse,
     })
       .then(() => {
-        
+        console.log("dsadsa");
       })
       .catch((error) => {
         setPredictError(true);
@@ -360,36 +360,42 @@ const [loading, setLoading] = React.useState(false);
           justifyContent: "center",
         }}
       >
-        <Box
-          sx={{
-            border: 1,
-            borderRadius: "36px",
-            padding: "8px",
-            width: "60%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <Box>
-          {stop && (
-            <Typography variant="h5" noWrap>
-              Predictions waiting...
-            </Typography>
-          )}
-          {!playVideo && !stop && (
-            <Typography variant="h5" noWrap>
-              Place Your Finger To pulsemeter to start
-            </Typography>
-          )}
-          {
-           playVideo && (
-            <Typography variant="h5" noWrap>
-              Please be focused on video and try not to get distrupted
-            </Typography>
-          ) 
-          }
+        {!playVideo && !stop && (
+          <Box
+            sx={{
+              border: 1,
+              borderRadius: "36px",
+              padding: "8px",
+              width: "60%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Box>
+              <Typography variant="h5" noWrap>
+                Place Your Finger To pulsemeter to start
+              </Typography>
+            </Box>
           </Box>
-        </Box>
+        )}
+        {playVideo && (
+          <Box
+            sx={{
+              border: 1,
+              borderRadius: "36px",
+              padding: "8px",
+              width: "60%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Box>
+              <Typography variant="h5" noWrap>
+                Please be focused on video and try not to get distrupted
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Box>
       <Box sx={{ width: "100%" }}>
         <Tabs
@@ -689,11 +695,13 @@ const [loading, setLoading] = React.useState(false);
                   </Modal>
                   <Modal
                     open={loading}
+                    disableBackdropClick
                     onClose={handleCloseLoading}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                   >
-                    <Box sx={{
+                    <Box
+                      sx={{
                         position: "absolute",
                         top: "50%",
                         left: "50%",
@@ -706,16 +714,11 @@ const [loading, setLoading] = React.useState(false);
                         pt: 2,
                         px: 4,
                         pb: 3,
-                      }}>
-                      {
-                        loading && <LoadingSpinner /> 
-                      }
-                      {
-                        !loading && <>dsadasdsa</>
-                      }
-                      {
-                        predictError && <>Predict Error !</>
-                      }
+                      }}
+                    >
+                      {loading && <LoadingSpinner />}
+                      {!loading && <>dsadasdsa</>}
+                      {predictError && <>Predict Error !</>}
                     </Box>
                   </Modal>
                 </Grid>
