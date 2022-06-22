@@ -142,7 +142,7 @@ const Pulse = ({ startAdc, reset, bpm, setBpm }) => {
     <div>
       <div className="row">
         <div className="col-md-8">
-          <Typography variant="h5" style={{ textAlign: "start" }}>
+          <Typography variant="h5" style={{ textAlign: "start", color:(readyState === ReadyState.OPEN ? "green" : readyState === ReadyState.CLOSED ? "red" : "inherit")}}>
             &nbsp; Pulsemeter: &nbsp;{connectionStatus}
           </Typography>
           <div></div>

@@ -163,7 +163,7 @@ export default function MainPage({}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     handleClose();
-    setStop(false)
+    setStop(false);
   };
   const sendMessageToggle = () => {
     sendMessage(COMMANDS.START_ALTERNATING);
@@ -259,7 +259,7 @@ export default function MainPage({}) {
   };
 
   const x = lastMessage ? parse(lastMessage.data) : {};
-  console.log(x, "x")
+  console.log(x, "x");
   const keyPress = React.useCallback((e) => {
     console.log(e);
     if (e.key === "1") {
@@ -334,9 +334,21 @@ export default function MainPage({}) {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h5" noWrap>
-            Place Your Finger To pulsemeter to start
-          </Typography>
+          {!playVideo && !stop && (
+            <Typography variant="h5" noWrap>
+              Place Your Finger To pulsemeter to start
+            </Typography>
+          )}
+          {playVideo && (
+            <Typography variant="h5" noWrap>
+              Please be focused on video and try not to get distrupted
+            </Typography>
+          )}
+          {stop && (
+            <Typography variant="h5" noWrap>
+              Save Result
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box sx={{ width: "100%" }}>
@@ -467,7 +479,18 @@ export default function MainPage({}) {
                           getData={getData}
                           initialTime={initialTime}
                         />
-                        <Typography variant="h5" style={{ textAlign: "start" }}>
+                        <Typography
+                          variant="h5"
+                          style={{
+                            textAlign: "start",
+                            color:
+                              readyState === ReadyState.OPEN
+                                ? "green"
+                                : readyState === ReadyState.CLOSED
+                                ? "red"
+                                : "inherit",
+                          }}
+                        >
                           &nbsp; fNIRS : &nbsp; {connectionStatus}
                         </Typography>
                       </Box>
@@ -493,6 +516,7 @@ export default function MainPage({}) {
                       }}
                     >
                       <MonitorHeartIcon fontSize="large" />
+
                       <Typography variant="h5">
                         &nbsp; Hearth Rate : &nbsp;
                         {bpm}

@@ -44,6 +44,7 @@ import { ref, set, onValue, off } from "firebase/database";
 import Swal from "sweetalert2";
 import ReactStars from "react-rating-stars-component";
 import PsychologyIcon from "@mui/icons-material/Psychology";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -55,15 +56,16 @@ const Item = styled(Paper)(({ theme }) => ({
 var initialTime = null;
 
 export default function MainPage({}) {
-  //const [socketUrl, setSocketUrl] = React.useState("ws://192.168.43.243/ws");
-  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+  const [socketUrl, setSocketUrl] = React.useState("ws://192.168.43.243/ws");
+  //const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
   const [uploading, setUploading] = React.useState(false);
   const [playVideo, setPlayVideo] = React.useState(false);
   const [rating, setRating] = React.useState(0);
-
+const [loading, setLoading] = React.useState(false);
+  const [predictError, setPredictError] = React.useState(false);
   const [value, setValue] = React.useState("one");
   const upload = () => {
     // set(ref(db, '/'), {});
@@ -73,7 +75,7 @@ export default function MainPage({}) {
     const id = uuidv4();
     console.log({ id });
     const { fnirs, pulse } = getData(false);
-    set(ref(db, "fooo/" + id), {
+    set(ref(db, "new-hardware/" + id), {
       data: fnirs,
       pulse: pulse,
       video_id: videos[value].id,
@@ -139,8 +141,8 @@ export default function MainPage({}) {
     setOpenModalfNIRS(false);
   };
 
-  const handleHRClose = () => {
-    setOpenModalHR(false);
+  const handleCloseLoading = () => {
+    setLoading(false)
   };
 
   const handleOpenModalfNirs = () => {
@@ -163,7 +165,7 @@ export default function MainPage({}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     handleClose();
-    setPlayVideo(false);
+    setStop(false);
   };
   const sendMessageToggle = () => {
     sendMessage(COMMANDS.START_ALTERNATING);
@@ -188,6 +190,40 @@ export default function MainPage({}) {
     },
   };
 
+  const guess = () => {
+    const id = uuidv4();
+    console.log({ id });
+    setLoading(true);
+    const { fnirs, pulse } = getData();
+    const mlPromise = () =>
+      new Promise((resolve) => {
+        const listener = onValue(ref(db, 'result'), (snapshot) => {
+          if (snapshot.exists()) {
+            const result = snapshot.val();
+            if (result.id === id) {
+              console.log(result.rating);
+              resolve(result.rating);
+              resolve(result.percentage);
+            }
+          }
+        });
+        setTimeout(() => off(ref(db, 'result'), listener), 20000);
+      });
+
+    set(ref(db, 'queue'), {
+      id,
+      data: fnirs,
+      pulse
+    })
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        setPredictError(true);
+        console.log(error);
+      });
+  };
+
   React.useEffect(() => {
     initMessageHistory();
     initPulseHistory();
@@ -202,8 +238,8 @@ export default function MainPage({}) {
 
   const onEnded = () => {
     setStop(true);
-    handleOpen();
     setPlayVideo(false);
+    guess();
   };
 
   React.useEffect(() => {
@@ -259,7 +295,7 @@ export default function MainPage({}) {
   };
 
   const x = lastMessage ? parse(lastMessage.data) : {};
-  console.log(x, "x")
+  console.log(x, "x");
   const keyPress = React.useCallback((e) => {
     console.log(e);
     if (e.key === "1") {
@@ -334,9 +370,25 @@ export default function MainPage({}) {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h5" noWrap>
-            Place Your Finger To pulsemeter to start
-          </Typography>
+          <Box>
+          {stop && (
+            <Typography variant="h5" noWrap>
+              Predictions waiting...
+            </Typography>
+          )}
+          {!playVideo && !stop && (
+            <Typography variant="h5" noWrap>
+              Place Your Finger To pulsemeter to start
+            </Typography>
+          )}
+          {
+           playVideo && (
+            <Typography variant="h5" noWrap>
+              Please be focused on video and try not to get distrupted
+            </Typography>
+          ) 
+          }
+          </Box>
         </Box>
       </Box>
       <Box sx={{ width: "100%" }}>
@@ -467,7 +519,18 @@ export default function MainPage({}) {
                           getData={getData}
                           initialTime={initialTime}
                         />
-                        <Typography variant="h5" style={{ textAlign: "start" }}>
+                        <Typography
+                          variant="h5"
+                          style={{
+                            textAlign: "start",
+                            color:
+                              readyState === ReadyState.OPEN
+                                ? "green"
+                                : readyState === ReadyState.CLOSED
+                                ? "red"
+                                : "inherit",
+                          }}
+                        >
                           &nbsp; fNIRS : &nbsp; {connectionStatus}
                         </Typography>
                       </Box>
@@ -493,6 +556,7 @@ export default function MainPage({}) {
                       }}
                     >
                       <MonitorHeartIcon fontSize="large" />
+
                       <Typography variant="h5">
                         &nbsp; Hearth Rate : &nbsp;
                         {bpm}
@@ -539,7 +603,7 @@ export default function MainPage({}) {
                           {x[x.length - 1]?.p1_740} {x[x.length - 1]?.p2_740}{" "}
                           {x[x.length - 1]?.p3_740} {x[x.length - 1]?.p4_740}{" "}
                           {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p2_850}{" "}
-                          {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p1_850}
+                          {x[x.length - 1]?.p3_850} {x[x.length - 1]?.p4_850}
                         </Typography>
                       </Box>
                     </Box>
@@ -589,62 +653,69 @@ export default function MainPage({}) {
                       </Box>
                       <Box>
                         <ResponsiveContainer width="99%" height={500}>
-                          <LineChart data={console.log(getData(true).fnirs)}>
+                          <LineChart data={getData(true).fnirs}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
                             <Line
                               type="monotone"
-                              dataKey="p1_740"
+                              dataKey="adc1"
                               stroke="#8884d8"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="p2_740"
+                              dataKey="adc2"
                               stroke="#82ca9d"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="p3_740"
+                              dataKey="adc3"
                               stroke="#856245"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="p4_740"
-                              stroke="#000000"
-                              isAnimationActive={false}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="p1_850"
-                              stroke="#8884d8"
-                              isAnimationActive={false}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="p2_850"
-                              stroke="#82ca9d"
-                              isAnimationActive={false}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="p3_850"
-                              stroke="#856245"
-                              isAnimationActive={false}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="p4_850"
+                              dataKey="adc4"
                               stroke="#000000"
                               isAnimationActive={false}
                             />
                           </LineChart>
                         </ResponsiveContainer>
                       </Box>{" "}
+                    </Box>
+                  </Modal>
+                  <Modal
+                    open={loading}
+                    onClose={handleCloseLoading}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                  >
+                    <Box sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "25%",
+                        height: "45%",
+                        bgcolor: "background.paper",
+                        border: "2px solid #000",
+                        boxShadow: 24,
+                        pt: 2,
+                        px: 4,
+                        pb: 3,
+                      }}>
+                      {
+                        loading && <LoadingSpinner /> 
+                      }
+                      {
+                        !loading && <>dsadasdsa</>
+                      }
+                      {
+                        predictError && <>Predict Error !</>
+                      }
                     </Box>
                   </Modal>
                 </Grid>
