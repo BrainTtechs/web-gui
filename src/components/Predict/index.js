@@ -119,8 +119,9 @@ export default function MainPage({}) {
   const [pulseResetState, setPulseReset] = React.useState(0);
   const [data, setData] = React.useState(getInitialData());
   const [bpm, setBpm] = React.useState("--");
-  const [openModalHR, setOpenModalHR] = React.useState(false);
   const [openModalfNIRS, setOpenModalfNIRS] = React.useState(false);
+  const [mLRating, setMLRating] = React.useState(1);
+  const [mLPercentage, setMLPercentage] = React.useState({});
 
   const initMessageHistory = () => localStorage.setItem("messageHistory", "[");
 
@@ -149,9 +150,6 @@ export default function MainPage({}) {
     setOpenModalfNIRS(true);
   };
 
-  const handleOpenModalHR = () => {
-    setOpenModalHR(true);
-  };
 
   const resetPulse = () => {
     setPulseReset(pulseResetState + 1);
@@ -195,20 +193,6 @@ export default function MainPage({}) {
     console.log({ id });
     setLoading(true);
     const { fnirs, pulse } = getData();
-    const mlPromise = () =>
-      new Promise((resolve) => {
-        const listener = onValue(ref(db, "result"), (snapshot) => {
-          if (snapshot.exists()) {
-            const result = snapshot.val();
-            if (result.id === id) {
-              console.log(result.rating);
-              resolve(result.rating);
-              resolve(result.percentage);
-            }
-          }
-        });
-        setTimeout(() => off(ref(db, "result"), listener), 20000);
-      });
 
     set(ref(db, "queue"), {
       id,
@@ -217,6 +201,18 @@ export default function MainPage({}) {
     })
       .then(() => {
         console.log("dsadsa");
+        const listener = onValue(ref(db, "result"), (snapshot) => {
+          if (snapshot.exists()) {
+            const result = snapshot.val();
+            if (result.id === id) {
+              console.log(result.rating);
+              setMLRating(result.rating);
+              setMLPercentage(result.percentage);
+              setLoading(false);
+            }
+          }
+        });
+        setTimeout(() => off(ref(db, "result"), listener), 20000);
       })
       .catch((error) => {
         setPredictError(true);
@@ -717,7 +713,20 @@ export default function MainPage({}) {
                       }}
                     >
                       {loading && <LoadingSpinner />}
-                      {!loading && <>dsadasdsa</>}
+                      {!loading && (
+                        <Box>
+                          <Typography variant="h5">
+                            &nbsp; Rating : &nbsp;
+                            {mLRating}
+                            &nbsp;
+                          </Typography>
+                          <Typography variant="h5">
+                            &nbsp; Percentage : &nbsp;
+                            {mLPercentage}
+                            &nbsp;%
+                          </Typography>
+                        </Box>
+                      )}
                       {predictError && <>Predict Error !</>}
                     </Box>
                   </Modal>
