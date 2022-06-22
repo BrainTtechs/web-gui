@@ -55,8 +55,8 @@ const Item = styled(Paper)(({ theme }) => ({
 var initialTime = null;
 
 export default function MainPage({}) {
-  //const [socketUrl, setSocketUrl] = React.useState('ws://192.168.43.243/ws');
-  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+  const [socketUrl, setSocketUrl] = React.useState("ws://192.168.43.243/ws");
+  //const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
@@ -188,6 +188,10 @@ export default function MainPage({}) {
     },
   };
 
+  React.useEffect(() => {
+    initMessageHistory();
+    initPulseHistory();
+  }, []);
   const onStart = () => {
     sendMessageToggle();
     setStop(false);
@@ -208,47 +212,22 @@ export default function MainPage({}) {
       return;
     }
     if (lastMessage !== undefined && lastMessage !== null) {
-      const d = JSON.parse(lastMessage.data);
-      const time = new Date().getTime();
-      const str = String(time); // 👉️ '6789'
-      const num = ((str / 1000) * 10) / 3;
-      const t = num.toFixed(1);
-      const x = getData().fnirs[1];
-      if (x) d.time = Number((t - initialTime).toFixed(1));
-      else {
-        if (initialTime === null) initialTime = t;
-        d.time = 0;
-      }
+      const d = parse(lastMessage.data);
+
       const saved = localStorage.getItem("messageHistory");
-      const stringified = JSON.stringify(d) + ",";
+      const stringified = JSON.stringify(d).slice(1, -1) + ",";
+
       const newHistory = saved?.concat(stringified) || stringified;
+      console.log(
+        { d },
+        { saved },
+        { stringified },
+        { newHistory },
+        newHistory.length
+      );
       localStorage.setItem("messageHistory", newHistory);
       // console.log(newHistory, "newhistory");
       // const limit = 100;
-      const limit = 50;
-      const f = (a) => {
-        return a.slice(-limit);
-      };
-      if (d.led === 740) {
-        setData({
-          ...data,
-          time: [...data.time, counter],
-          p1_740: [...f(data.p1_740), d.adc1],
-          p2_740: [...f(data.p2_740), d.adc2],
-          p3_740: [...f(data.p3_740), d.adc3],
-          p4_740: [...f(data.p4_740), d.adc4],
-        });
-      } else {
-        setData({
-          ...data,
-          time: [...data.time, counter],
-          p1_850: [...f(data.p1_850), d.adc1],
-          p2_850: [...f(data.p2_850), d.adc2],
-          p3_850: [...f(data.p3_850), d.adc3],
-          p4_850: [...f(data.p4_850), d.adc4],
-        });
-      }
-      if (counter < limit) setCounter(counter + 1);
     }
   }, [lastMessage]);
 
@@ -260,7 +239,27 @@ export default function MainPage({}) {
     [ReadyState.UNINSTANTIATED]: "Uninstantiated",
   }[readyState];
 
-  const x = lastMessage ? JSON.parse(lastMessage.data) : {};
+  const parse = (data) => {
+    data = JSON.parse(data);
+    var obj = [];
+    // map data array
+    data.map((element) => {
+      var foo = {};
+      foo.p1_740 = element[0];
+      foo.p2_740 = element[1];
+      foo.p3_740 = element[2];
+      foo.p4_740 = element[3];
+      foo.p1_850 = element[4];
+      foo.p2_850 = element[5];
+      foo.p3_850 = element[6];
+      foo.p4_850 = element[7];
+      obj.push(foo);
+    });
+    return obj;
+  };
+
+  const x = lastMessage ? parse(lastMessage.data) : {};
+  console.log(x, "x")
   const keyPress = React.useCallback((e) => {
     console.log(e);
     if (e.key === "1") {
@@ -284,8 +283,11 @@ export default function MainPage({}) {
     }
     const newHistory =
       saved === "[" ? saved.concat("]") : saved?.slice(0, -1).concat("]");
+    //console.log({saved});
+    //console.log({newHistory})
+
     const fnirs = JSON.parse(newHistory);
-    console.log(fnirs);
+    //console.log(fnirs);
     if (isGraph) {
       while (fnirs.length > 100) {
         fnirs.splice(1, 1);
@@ -534,7 +536,10 @@ export default function MainPage({}) {
                           variant="h5"
                           style={{ textAlign: "start", marginLeft: "10px" }}
                         >
-                          {x.adc1} {x.adc2} {x.adc3} {x.adc4}
+                          {x[x.length - 1]?.p1_740} {x[x.length - 1]?.p2_740}{" "}
+                          {x[x.length - 1]?.p3_740} {x[x.length - 1]?.p4_740}{" "}
+                          {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p2_850}{" "}
+                          {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p1_850}
                         </Typography>
                       </Box>
                     </Box>
@@ -626,7 +631,6 @@ export default function MainPage({}) {
                         <ResponsiveContainer width="99%" height={500}>
                           <LineChart data={getData(true).fnirs}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey={"time"} />
                             <YAxis />
                             <Tooltip />
                             <Legend />
