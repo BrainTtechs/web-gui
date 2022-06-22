@@ -73,7 +73,7 @@ export default function MainPage({}) {
     const id = uuidv4();
     console.log({ id });
     const { fnirs, pulse } = getData(false);
-    set(ref(db, "fooo/" + id), {
+    set(ref(db, "new-hardware/" + id), {
       data: fnirs,
       pulse: pulse,
       video_id: videos[value].id,
@@ -163,7 +163,7 @@ export default function MainPage({}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     handleClose();
-    setPlayVideo(false);
+    setStop(false)
   };
   const sendMessageToggle = () => {
     sendMessage(COMMANDS.START_ALTERNATING);
@@ -386,7 +386,7 @@ export default function MainPage({}) {
                 width="100%"
                 height="100%"
                 volume={videos[value].id === 2 ? 0.3 : 0.5}
-                controls={true}
+                controls={false}
                 onStart={onStart}
                 onEnded={onEnded}
                 playing={playVideo}
@@ -539,7 +539,7 @@ export default function MainPage({}) {
                           {x[x.length - 1]?.p1_740} {x[x.length - 1]?.p2_740}{" "}
                           {x[x.length - 1]?.p3_740} {x[x.length - 1]?.p4_740}{" "}
                           {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p2_850}{" "}
-                          {x[x.length - 1]?.p1_850} {x[x.length - 1]?.p1_850}
+                          {x[x.length - 1]?.p3_850} {x[x.length - 1]?.p4_850}
                         </Typography>
                       </Box>
                     </Box>
@@ -553,7 +553,6 @@ export default function MainPage({}) {
                       handleClose={handleClose}
                     /> */}
                   </Item>
-                      <Box>
                   <Modal
                     open={openModalfNIRS}
                     onClose={handlefNirsClose}
