@@ -55,8 +55,8 @@ const Item = styled(Paper)(({ theme }) => ({
 var initialTime = null;
 
 export default function MainPage({}) {
-  const [socketUrl, setSocketUrl] = React.useState("ws://192.168.43.243/ws");
-  //const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
+  //const [socketUrl, setSocketUrl] = React.useState("ws://192.168.43.243/ws");
+  const [socketUrl, setSocketUrl] = React.useState("ws://localhost:8080");
 
   const { sendMessage, lastMessage, readyState, getWebSocket } =
     useWebSocket(socketUrl);
@@ -553,7 +553,6 @@ export default function MainPage({}) {
                       handleClose={handleClose}
                     /> */}
                   </Item>
-                      <Box>
                   <Modal
                     open={openModalfNIRS}
                     onClose={handlefNirsClose}
@@ -590,32 +589,56 @@ export default function MainPage({}) {
                       </Box>
                       <Box>
                         <ResponsiveContainer width="99%" height={500}>
-                          <LineChart data={getData(true).fnirs}>
+                          <LineChart data={console.log(getData(true).fnirs)}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
                             <Line
                               type="monotone"
-                              dataKey="adc1"
+                              dataKey="p1_740"
                               stroke="#8884d8"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="adc2"
+                              dataKey="p2_740"
                               stroke="#82ca9d"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="adc3"
+                              dataKey="p3_740"
                               stroke="#856245"
                               isAnimationActive={false}
                             />
                             <Line
                               type="monotone"
-                              dataKey="adc4"
+                              dataKey="p4_740"
+                              stroke="#000000"
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="p1_850"
+                              stroke="#8884d8"
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="p2_850"
+                              stroke="#82ca9d"
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="p3_850"
+                              stroke="#856245"
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="p4_850"
                               stroke="#000000"
                               isAnimationActive={false}
                             />

@@ -20,8 +20,7 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import StarBorderPurple500Icon from "@mui/icons-material/StarBorderPurple500";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MainPage from "./components/MainPage";
-import Foo2 from "./Foo2";
-import Foo3 from "./Foo3";
+import Predict from "./components/Predict";
 
 const drawerWidth = 240;
 
@@ -146,7 +145,7 @@ export default function Frame() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Foo1", "Starred", "Settings"].map((text, index1) => (
+          {["Data Collection", "Predict"].map((text, index1) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
@@ -165,10 +164,8 @@ export default function Frame() {
                 >
                   {index1 === 0 ? (
                     <StarBorderPurple500Icon />
-                  ) : index1 === 1 ? (
-                    <PsychologyIcon />
                   ) : (
-                    <SettingsIcon />
+                    <PsychologyIcon />
                   )}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
@@ -180,7 +177,7 @@ export default function Frame() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader style={{ minHeight: "64px" }} />
         
-        {index === 0 ? <MainPage /> : index === 1 ? <Foo2 /> : <Foo3 />}
+        {index === 0 ? <MainPage /> : <Predict />}
       </Box>
     </Box>
   );
