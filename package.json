@@ -1,29 +1,32 @@
 {
-  "name": "fnirs",
+  "name": "chart-trial",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3000",
   "dependencies": {
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.8.0",
-    "@mui/lab": "^5.0.0-alpha.83",
-    "@mui/material": "^5.8.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "firebase": "^9.8.2",
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/lab": "latest",
+    "@mui/material": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/user-event": "latest",
+    "firebase": "^9.8.3",
     "pondjs": "^0.9.0",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-player": "^2.10.1",
     "react-rating-stars-component": "^2.2.0",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
-    "react-timeseries-charts": "^0.16.1",
-    "react-toastify": "^9.0.2",
+    "react-toastify": "^9.0.4",
     "react-use-websocket": "^4.2.0",
+    "recharts": "^2.1.10",
     "ringjs": "^0.0.1",
     "serve": "^13.0.2",
-    "uuid": "^8.3.2",
-    "web-vitals": "^2.1.0"
+    "sweetalert2": "^11.4.18",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -48,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@iconify/react": "^3.2.2"
   }
 }
